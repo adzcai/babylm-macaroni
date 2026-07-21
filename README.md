@@ -1,16 +1,13 @@
+Disclaimer: This anonymized code was generated mostly by AI from the research monorepo for the review period.
+
 # multilingual-macaroni
 
-Reproducibility code for **"Feeding BabyLMs Macaroni: Investigating Code-Switched Curriculum
+Code **"Feeding BabyLMs Macaroni: Investigating Code-Switched Curriculum
 Learning in Data-Constrained Multilingual Modelling"** (BabyLM 2026, Multilingual track).
 
 We train GPT-2 BabyLMs from scratch on synthetic **code-switched** English/Dutch/Chinese under a
-100M-word budget, and find a small downstream boost from a code-switching **curriculum** (word-level
-→ sentence-level → monolingual) over a shuffled ordering. This repo lets you set up the environment,
-download the corpora, train a model (or pull ours), evaluate it, and regenerate every figure.
-
-**Operating principle:** given the *data* you can train the models; given a *model in the right
-place* you can evaluate it and reproduce the figures. Dataset-*synthesis* code is out of scope — the
-8 corpora are consumed as finished artifacts from the Hub.
+100M-word budget (word-level → sentence-level → monolingual). This repo lets you set up the environment,
+download the corpora, train a model (or pull ours), evaluate it, and regenerate most figures.
 
 ## Artifacts (already public on HuggingFace)
 - Corpora — [`drooryck/multilingual-macaroni-corpus`](https://huggingface.co/datasets/drooryck/multilingual-macaroni-corpus) (8 subsets)
@@ -22,7 +19,7 @@ as `switch`, staged), `curriculum_noswitch` (monolingual staged twin).
 
 ---
 
-## The five commands
+## Give commands
 
 ```bash
 # (1) SET UP — venv, deps, and clone+pin the external trainer & evaluator
@@ -81,11 +78,11 @@ A model lives at `models/<condition>/` (seed 42) or `models/<condition>-s43/` et
 | `fig10_grid_advantage.py` | 10 (context-invariance grid) | finals + monolingual corpora + Exp-3 pairs |
 | `fig11_dose_response.py` | 11 (dose-response, rising part only) | `noswitch` + `word` finals; maximal point not reproducible |
 
-Figure 1 is a TikZ schematic (`figures/fig1_directions.tex`), not a data figure.
+Figure 1 is a TikZ schematic (`figures/fig1_directions.tex`).
 
 ---
 
-## Requirements & caveats
+## Requirements
 
 - **GPU** for training, evaluation, and the figure measurements (representation extraction).
 - **HuggingFace token** (`export HF_TOKEN=...`): the retrieval figures (2, 3, 5) probe alignment on
@@ -94,12 +91,11 @@ Figure 1 is a TikZ schematic (`figures/fig1_directions.tex`), not a data figure.
 - **spaCy models** for the POS-based figures: `python -m spacy download en_core_web_sm nl_core_news_sm`.
 
 ### Data the figures need beyond `download_data.py` / `download_models.py`
-The 8 corpus subsets + 24 final models reproduce Figs **2 and 5** directly (given FLORES+). The
-analysis figures (4, 6, 7, 8, 9, 10, 11) additionally read a few inputs that are **not** on the two
-Hub repos. Each script fails with a clear message naming the exact missing file — nothing is
-fabricated. In three tiers:
+The 8 corpus subsets + 24 final models reproduce Figs **2 and 5** directly (given FLORES+). Some supplementary
+analysis figures (4, 6, 7, 8, 9, 10, 11) additionally read a few inputs that are not on the two
+Hub repos and will need to be manually generated.
 
-1. **Re-derivable from what you download** (the ported builders regenerate these on demand):
+1. **Re-derivable from what you download**:
    frequency tables `freq_{lang}.tsv`, the attested lexicon / corpus-frequency / exposure sets
    (from `curriculum/1_intra` vs `curriculum_noswitch/1_intra`), and the Fig-7 POS map.
 2. **Public, but a separate download:** the **monolingual BabyLM corpora** — needed for the
@@ -110,29 +106,14 @@ fabricated. In three tiers:
    tiered eval lexicon — without them the lexicon degrades to attested-only), the Exp-3 matched-pair
    table (`measurement_pairs_mono_freq.parquet`, Fig 10), and any pre-computed
    `eval_lexicon`/`exposure_sets` if you want byte-identical inputs.
-
-### ⚠️ Trajectory figures (3, 6, 7)
-These need *per-checkpoint* models for **both** curriculum arms, but only the CS-curriculum arm's
-milestones are published (as `chck_*M` on `drooryck/babylm-macaroni`); the no-CS arm's per-checkpoint
-checkpoints are **not** on HF. To reproduce them, re-train `curriculum`/`curriculum_noswitch` saving
-milestone checkpoints (see `train.py --help`) or obtain the intermediates from the authors. Fig 4's
-bars still render without them (only Fig 6's trajectory is skipped).
+4. ⚠️ Trajectory figures (3, 6, 7) These need *per-checkpoint* models for **both** curriculum arms, but we currently only publish the CS-curriculum arm's
+  checkpoints (as `chck_*M` on `drooryck/babylm-macaroni`). To reproduce them, re-train `curriculum`/`curriculum_noswitch` saving
+  milestone checkpoints (see `train.py --help`).
 
 ### Notes
 - **Single-seed vs 3-seed error bars:** the paper averaged 3 seeds. The static-alignment figures
   (4, 6, 11) run per `--seed`; run them across seeds 42/43/44 and pool for the paper's mean±SD (or
   accept single-seed point estimates without seed-variance bands).
-- **Fig 11 dose-response — partial by design.** The paper's Fig 11 is an inverted-U over three doses
-  (none → sparse → **maximal**), showing alignment peaks at *sparse* switching. The maximal point
-  (`allcontent`) came from a bespoke maximal-relexification corpus/model produced by the
-  corpus-synthesis pipeline, which is out of scope here — and it is **not** among the published
-  artifacts, so it is **not reproducible** from this repo (and no public condition faithfully stands
-  in for it). This repo therefore reproduces only the doses backed by public models — the rising part
-  of the curve — with an exact mapping `noswitch→noswitch`, `intra→word`. That shows sparse switching
-  improves alignment over none, but **not** the maximal-density turnover. If you train an
-  `allcontent`-style model, add it as a third dose with `--dose <key>=<condition>` to recover the full
-  inverted-U. Because it is partial, Fig 11 is **opt-in** in `make_all.py` — run it explicitly with
-  `python figures/fig11_dose_response.py ...` or `python figures/make_all.py --all`.
 - **Pins:** `setup.sh` clones `multilingual-training@fec6db2c…` (trainer) and
   `babylm-eval@6f825c29…` (evaluator). The trainer commit is the current tip of `main` on the
   `llam11/multilingual-training` fork (the canonical source for it — it is not on the `babylm-org`
