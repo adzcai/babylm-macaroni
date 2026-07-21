@@ -1,0 +1,170 @@
+% Figure 1 — the three corpus splits with verbatim v2-corpus snippets
+% (mined by scripts/fig_snippets.py in cs-analysis): monolingual sources
+% (top; the doc-id-aligned twins of three panel-(c) examples), sentence-level
+% CS as an undirected language triangle (middle), word-level CS as a
+% directed triangle with all six matrix<-donor directions (bottom).
+% Single-column, for page 1.
+% Requires (main.tex preamble): \zh, colors langEN/langNL/langZH,
+% intracol/sentcol/monocol, tikz libs calc + arrows.meta. Built with xelatex.
+\begin{figure}[t!]
+\centering
+
+\tikzset{
+  langchip/.style 2 args={draw=#1!70, fill=#1!12, text=#1, rounded corners=2.5pt,
+    inner xsep=5pt, inner ysep=2.5pt, text height=1.55ex, text depth=.35ex,
+    minimum width=2.3em, align=center, font=\footnotesize\bfseries},
+  panelhead/.style={fill=#1, rounded corners=2pt, minimum width=7.3cm,
+    inner ysep=2.5pt, font=\scriptsize\bfseries, text=black!75},
+  exlab/.style={font=\tiny, inner sep=1.2pt, fill=white, text=black!80},
+  csarrow/.style={-{Stealth[length=4pt,width=3.5pt]}, line width=0.7pt},
+}
+
+{\footnotesize\textbf{A}\quad Examples of each data type}
+
+\vspace{1pt}
+
+% ---------------- (a) monolingual sources ----------------
+\begin{tikzpicture}[x=1cm,y=1cm]
+  \node[panelhead=monocol!22] at (3.7,0.75) {Unilingual data};
+  \node[langchip={langEN}{}] (en) at (1.2,0) {en};
+  \node[langchip={langNL}{}] (nl) at (3.7,0) {nl};
+  \node[langchip={langZH}{}] (zh) at (6.2,0) {zh};
+  \node[font=\tiny, text=langEN, align=center] at (1.2,-0.55) {That's illegal!};
+  \node[font=\tiny, text=langNL, align=center] at (3.7,-0.55) {Geef me een kus .};
+  \node[font=\tiny, text=langZH, align=center] at (6.2,-0.55) {\zh{有什么区别}?};
+\end{tikzpicture}
+
+\vspace{1pt}
+
+% ---------------- (b) sentence-level CS: directed triangle ----------------
+% Arrows run donor -> matrix (as in panel c); each label is a verbatim
+% adjacent sentence pair from phase_sentence, matrix sentence first.
+\begin{tikzpicture}[x=1cm,y=1cm]
+  \node[panelhead=sentcol!20] at (3.7,1.0) {Sentence-level CS \,---\, 6 ordered directions};
+  \coordinate (EN) at (0.5,0);
+  \coordinate (ZH) at (6.9,0);
+  \coordinate (NL) at (3.7,-1.7);
+  % top side: zh -> en (donor zh) above, en -> zh (donor en) below
+  \begin{scope}[transform canvas={shift={(0,0.16)}}]
+    \draw[csarrow, langZH] ($(ZH)!0.10!(EN)$) -- node[exlab]
+      {\textcolor{langEN}{It's you.} \textcolor{langZH}{\zh{不，不是。}}} ($(ZH)!0.90!(EN)$);
+  \end{scope}
+  \begin{scope}[transform canvas={shift={(0,-0.16)}}]
+    \draw[csarrow, langEN] ($(EN)!0.10!(ZH)$) -- node[exlab]
+      {\textcolor{langZH}{\zh{他是谁呀。}} \textcolor{langEN}{It's Xu Song.}} ($(EN)!0.90!(ZH)$);
+  \end{scope}
+  % left side: en -> nl (donor en) outer, nl -> en (donor nl) inner
+  \begin{scope}[transform canvas={shift={(-0.156,-0.111)}}]
+    \draw[csarrow, langEN] ($(EN)!0.12!(NL)$) -- node[exlab, sloped]
+      {\textcolor{langNL}{Ken je hem?} \textcolor{langEN}{He's my brother.}} ($(EN)!0.88!(NL)$);
+  \end{scope}
+  \begin{scope}[transform canvas={shift={(0.156,0.111)}}]
+    \draw[csarrow, langNL] ($(NL)!0.12!(EN)$) -- node[exlab, sloped]
+      {\textcolor{langEN}{Where's the dog?} \textcolor{langNL}{Hij slaapt.}} ($(NL)!0.88!(EN)$);
+  \end{scope}
+  % right side: zh -> nl (donor zh) outer, nl -> zh (donor nl) inner
+  \begin{scope}[transform canvas={shift={(0.156,-0.111)}}]
+    \draw[csarrow, langZH] ($(ZH)!0.12!(NL)$) -- node[exlab, sloped]
+      {\textcolor{langNL}{Zie je hem ?} \textcolor{langZH}{\zh{他在那里。}}} ($(ZH)!0.88!(NL)$);
+  \end{scope}
+  \begin{scope}[transform canvas={shift={(-0.156,0.111)}}]
+    \draw[csarrow, langNL] ($(NL)!0.12!(ZH)$) -- node[exlab, sloped]
+      {\textcolor{langZH}{\zh{他妈姓杨.}} \textcolor{langNL}{Ik heet Li.}} ($(NL)!0.88!(ZH)$);
+  \end{scope}
+  \node[langchip={langEN}{}] at (EN) {en};
+  \node[langchip={langZH}{}] at (ZH) {zh};
+  \node[langchip={langNL}{}] at (NL) {nl};
+\end{tikzpicture}
+
+\vspace{5pt}
+
+% ---------------- (c) word-level CS: directed triangle ----------------
+\begin{tikzpicture}[x=1cm,y=1cm]
+  \node[panelhead=intracol!20] at (3.7,1.0) {Word-level CS \,---\, 6 ordered directions};
+  \coordinate (EN) at (0.5,0);
+  \coordinate (ZH) at (6.9,0);
+  \coordinate (NL) at (3.7,-1.7);
+  % top side: zh -> en (donor zh) above, en -> zh (donor en) below
+  \begin{scope}[transform canvas={shift={(0,0.16)}}]
+    \draw[csarrow, langZH] ($(ZH)!0.10!(EN)$) -- node[exlab]
+      {I know it'll \textcolor{langZH}{\zh{行}}.} ($(ZH)!0.90!(EN)$);
+  \end{scope}
+  \begin{scope}[transform canvas={shift={(0,-0.16)}}]
+    \draw[csarrow, langEN] ($(EN)!0.10!(ZH)$) -- node[exlab]
+      {\zh{得}\,\textcolor{langEN}{believe}\,\zh{爱情。}} ($(EN)!0.90!(ZH)$);
+  \end{scope}
+  % left side: en -> nl (donor en) outer, nl -> en (donor nl) inner
+  \begin{scope}[transform canvas={shift={(-0.156,-0.111)}}]
+    \draw[csarrow, langEN] ($(EN)!0.12!(NL)$) -- node[exlab, sloped]
+      {Pak die \textcolor{langEN}{shovel} .} ($(EN)!0.88!(NL)$);
+  \end{scope}
+  \begin{scope}[transform canvas={shift={(0.156,0.111)}}]
+    \draw[csarrow, langNL] ($(NL)!0.12!(EN)$) -- node[exlab, sloped]
+      {That's \textcolor{langNL}{illegaal}!} ($(NL)!0.88!(EN)$);
+  \end{scope}
+  % right side: zh -> nl (donor zh) outer, nl -> zh (donor nl) inner
+  \begin{scope}[transform canvas={shift={(0.156,-0.111)}}]
+    \draw[csarrow, langZH] ($(ZH)!0.12!(NL)$) -- node[exlab, sloped]
+      {Geef me een \textcolor{langZH}{\zh{吻}} .} ($(ZH)!0.88!(NL)$);
+  \end{scope}
+  \begin{scope}[transform canvas={shift={(-0.156,0.111)}}]
+    \draw[csarrow, langNL] ($(NL)!0.12!(ZH)$) -- node[exlab, sloped]
+      {\zh{有什么}\,\textcolor{langNL}{verschil}?} ($(NL)!0.88!(ZH)$);
+  \end{scope}
+  \node[langchip={langEN}{}] at (EN) {en};
+  \node[langchip={langZH}{}] at (ZH) {zh};
+  \node[langchip={langNL}{}] at (NL) {nl};
+\end{tikzpicture}
+
+\vspace{2pt}
+
+{\footnotesize\textbf{B}\quad Corpus composition}
+
+\vspace{1pt}
+
+% ---------------- Part B: corpus composition (horizontal, time -> right) ----
+% Rows = languages (shared chips at left); each bar reads left-to-right in
+% curriculum training order: word-level CS | sentence-level CS | unilingual.
+\begin{tikzpicture}[x=1cm,y=1cm]
+  \tikzset{seg/.style={draw=black!45, line width=0.4pt},
+           ctitle/.style={font=\scriptsize\bfseries, text=black!75},
+           leg/.style={font=\tiny, text=black!80, anchor=west, inner sep=1pt}}
+  \def\bh{0.30}   % row height
+  \def\rs{0.46}   % row pitch
+  \def\uw{1.95}   % unilingual bar width
+  \def\cx{2.65}   % CS panel x-offset
+  \def\cw{1.95}   % CS bar width
+  % --- CS-type legend, horizontal, above the panels ---
+  % Chain each item off the previous item's measured east edge so the gaps
+  % between items are EQUAL despite the labels having different widths
+  % (swatch 0.24 + 0.10 gap before text; 0.26 gap between items).
+  \def\ly{2.13}
+  \node[leg, anchor=west] (lt1) at (0.34,\ly) {word-level CS};
+  \fill[seg, fill=intracol!45] ($(lt1.west)+(-0.34,-0.11)$) rectangle ($(lt1.west)+(-0.10,0.11)$);
+  \node[leg, anchor=west] (lt2) at ($(lt1.east)+(0.60,0)$) {sentence-level CS};
+  \fill[seg, fill=sentcol!45]  ($(lt2.west)+(-0.34,-0.11)$) rectangle ($(lt2.west)+(-0.10,0.11)$);
+  \node[leg, anchor=west] (lt3) at ($(lt2.east)+(0.60,0)$) {unilingual};
+  \fill[seg, fill=monocol!35]  ($(lt3.west)+(-0.34,-0.11)$) rectangle ($(lt3.west)+(-0.10,0.11)$);
+  % shared language row chips
+  \node[langchip={langEN}{}] at (-0.45,{2*\rs+\bh/2}) {en};
+  \node[langchip={langNL}{}] at (-0.45,{1*\rs+\bh/2}) {nl};
+  \node[langchip={langZH}{}] at (-0.45,{0*\rs+\bh/2}) {zh};
+  % --- Unilingual corpus: all grey ---
+  \foreach \i in {0,1,2} { \fill[seg, fill=monocol!35] (0,\i*\rs) rectangle (\uw,\i*\rs+\bh); }
+  \node[ctitle] at (\uw/2,{2*\rs+\bh+0.30}) {Unilingual corpus};
+  % --- CS corpus: word | sentence | unilingual, left to right ---
+  \foreach \i in {0,1,2} {
+    \fill[seg, fill=intracol!45] (\cx,\i*\rs)           rectangle (\cx+\cw/3,\i*\rs+\bh);
+    \fill[seg, fill=sentcol!45]  (\cx+\cw/3,\i*\rs)     rectangle (\cx+2*\cw/3,\i*\rs+\bh);
+    \fill[seg, fill=monocol!35]  (\cx+2*\cw/3,\i*\rs)   rectangle (\cx+\cw,\i*\rs+\bh);
+  }
+  \node[ctitle] at (\cx+\cw/2,{2*\rs+\bh+0.30}) {CS corpus};
+\end{tikzpicture}
+
+\caption{\textbf{Composition of our CS corpus.}
+\textbf{A}: We begin with the unilingual competition datasets (top).
+Then we generate sentence-level CS data by translating sentences within a document to the paired language.
+We finally construct the word-level CS data by prompting an LLM to replace words from the unilingual data.
+\textbf{B}: We train models on two corpora: one unilingual corpus and one CS corpus. Both are one-third English, Dutch, and Chinese; the unilingual corpus keeps each document entirely of the source data, while each language third of the CS corpus is split equally into word-level CS, sentence-level CS, and unilingual text, shown left to right in curriculum training order. The order of documents is kept identical between paired models.}
+\label{fig:overview}
+\end{figure}

@@ -1,0 +1,46 @@
+# Training recipe for every multilingual-macaroni condition and curriculum stage.
+# Matches the BabyLM baseline recipe used in the paper: LR 5e-5, cosine-with-min-lr,
+# warmup 0.01, batch 16, 10 epochs. Paths are RELATIVE to the repo root; train.py
+# fills in per-condition fields (datasets, output_dir, model_name, checkpoint_dir,
+# init_new_model) and the tokenizer location.
+
+num_workers: 8
+
+# Set per-run by train.py.
+datasets: ""
+dataset_fraction: 1.0
+stratify_by: ""
+data_seed: 42
+
+model_config: "configs/gpt2-baseline.json"
+checkpoint_dir: ""          # curriculum stages >=2 set this to the previous stage's final ckpt
+init_new_model: "True"      # curriculum stages >=2 flip this to "False" (carry weights forward)
+resume_from_checkpoint: ""
+model_seed: 42
+model_name: "macaroni"
+output_dir: ""
+
+# Tokenizer: the shared BabyLM byte-level BPE (vocab 16,384). Leave empty to let
+# train.py reuse the tokenizer shipped inside any downloaded model under models/,
+# or set --tokenizer explicitly on the command line.
+tokenizer_dir: ""
+
+# Minimal checkpoints (epoch 5 + final epoch 10). Curriculum runs add milestone saves.
+save_intervals: [5.0, 10.0]
+eval_strategy: "epoch"
+eval_intervals: 1.0
+
+learning_rate: 5e-5
+lr_scheduler_type: "cosine_with_min_lr"
+min_lr_rate: 0.0
+weight_decay: 0.0
+adam_beta1: 0.9
+adam_beta2: 0.999
+adam_epsilon: 1e-08
+max_grad_norm: 1.0
+warmup_ratio: 0.01
+batch_size: 16
+gradient_accumulation_steps: 1
+epochs: 10
+
+push_to_hub: false

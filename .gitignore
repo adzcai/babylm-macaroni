@@ -1,0 +1,22 @@
+# Downloaded / trained artifacts and regenerable intermediates — never committed.
+models/
+data/
+out/
+
+# Cloned + pinned external repos (fetched by setup.sh).
+multilingual-training/
+babylm-eval/
+
+# Environments & weights.
+.venv/
+venv/
+*.safetensors
+*.bin
+*.pt
+*.ckpt
+
+# Python cruft.
+__pycache__/
+*.py[cod]
+.ipynb_checkpoints/
+.DS_Store
