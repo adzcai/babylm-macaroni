@@ -1,0 +1,79 @@
+using HF_TOKEN from environment
+repo-id    : drooryck/multilingual-macaroni-models (model)
+models-dir : test/models
+conditions : switch, noswitch, word, sent, par, salad, curriculum, curriculum_noswitch
+seeds      : 42, 43, 44
+
+[switch seed=42] revision=switch -> test/models/switch
+  skip: config.json already present (use --force to re-download)
+
+[switch seed=43] revision=switch-s43 -> test/models/switch-s43
+  skip: config.json already present (use --force to re-download)
+
+[switch seed=44] revision=switch-s44 -> test/models/switch-s44
+  skip: config.json already present (use --force to re-download)
+
+[noswitch seed=42] revision=noswitch -> test/models/noswitch
+  skip: config.json already present (use --force to re-download)
+
+[noswitch seed=43] revision=noswitch-s43 -> test/models/noswitch-s43
+  skip: config.json already present (use --force to re-download)
+
+[noswitch seed=44] revision=noswitch-s44 -> test/models/noswitch-s44
+  skip: config.json already present (use --force to re-download)
+
+[word seed=42] revision=word -> test/models/word
+  skip: config.json already present (use --force to re-download)
+
+[word seed=43] revision=word-s43 -> test/models/word-s43
+  skip: config.json already present (use --force to re-download)
+
+[word seed=44] revision=word-s44 -> test/models/word-s44
+  skip: config.json already present (use --force to re-download)
+
+[sent seed=42] revision=sent -> test/models/sent
+  skip: config.json already present (use --force to re-download)
+
+[sent seed=43] revision=sent-s43 -> test/models/sent-s43
+  skip: config.json already present (use --force to re-download)
+
+[sent seed=44] revision=sent-s44 -> test/models/sent-s44
+  skip: config.json already present (use --force to re-download)
+
+[par seed=42] revision=par -> test/models/par
+  skip: config.json already present (use --force to re-download)
+
+[par seed=43] revision=par-s43 -> test/models/par-s43
+  skip: config.json already present (use --force to re-download)
+
+[par seed=44] revision=par-s44 -> test/models/par-s44
+  skip: config.json already present (use --force to re-download)
+
+[salad seed=42] revision=salad -> test/models/salad
+  skip: config.json already present (use --force to re-download)
+
+[salad seed=43] revision=salad-s43 -> test/models/salad-s43
+  skip: config.json already present (use --force to re-download)
+
+[salad seed=44] revision=salad-s44 -> test/models/salad-s44
+  skip: config.json already present (use --force to re-download)
+
+[curriculum seed=42] revision=curriculum -> test/models/curriculum
+  skip: config.json already present (use --force to re-download)
+
+[curriculum seed=43] revision=curriculum-s43 -> test/models/curriculum-s43
+  skip: config.json already present (use --force to re-download)
+
+[curriculum seed=44] revision=curriculum-s44 -> test/models/curriculum-s44
+  skip: config.json already present (use --force to re-download)
+
+[curriculum_noswitch seed=42] revision=curriculum_noswitch -> test/models/curriculum_noswitch
+  skip: config.json already present (use --force to re-download)
+
+[curriculum_noswitch seed=43] revision=curriculum_noswitch-s43 -> test/models/curriculum_noswitch-s43
+  skip: config.json already present (use --force to re-download)
+
+[curriculum_noswitch seed=44] revision=curriculum_noswitch-s44 -> test/models/curriculum_noswitch-s44
+  skip: config.json already present (use --force to re-download)
+
+DONE. downloaded 0, skipped 24. models under /n/netscratch/kdbrantley_lab/Lab/adzcai/multilingual/multilingual-macaroni/test/models

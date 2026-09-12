@@ -7,7 +7,7 @@ monolingual log-frequency within a caliper) via optimal (Hungarian) assignment.
 INPUTS (under ``data_dir``, NOT produced by download_data.py — these are the
 lexicon/exposure artifacts of the alignment experiment; supply them alongside
 the corpus):
-  - align/eval_lexicon.parquet    (cross-lingual candidate translation pairs)
+  - align/eval_lexicon.parquet    (translation pairs: mined + MUSE)
   - align/exposure_sets.parquet   (ever_embedded / ever_replaced per word)
   - freq_{eng,nld,zho}.tsv        (monolingual corpus frequency tables)
 plus ``pos_map.parquet`` (built by pos_map.build_pos_map) under ``out_dir`` and
@@ -65,7 +65,7 @@ def _require(path, what):
         raise FileNotFoundError(
             f"{what} not found at {path}. This is an alignment-experiment input "
             f"not covered by download_data.py; supply it under data/ before "
-            f"running the Fig-7 pipeline.")
+            f"running measure_wordlevel.py (it builds them via _lib.align.prepare_lexicon).")
     return path
 
 

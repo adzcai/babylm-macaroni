@@ -1,0 +1,35 @@
+
+=== fig2_retrieval_per_layer ===
+$ /n/netscratch/kdbrantley_lab/Lab/adzcai/multilingual/multilingual-macaroni/.venv/bin/python /n/netscratch/kdbrantley_lab/Lab/adzcai/multilingual/multilingual-macaroni/figures/fig2_retrieval_per_layer.py --out test/out/figures_from_paper_csvs
+wrote /n/netscratch/kdbrantley_lab/Lab/adzcai/multilingual/multilingual-macaroni/test/out/figures_from_paper_csvs/fig2_retrieval_per_layer.pdf
+
+=== fig3_retrieval_trajectory ===
+$ /n/netscratch/kdbrantley_lab/Lab/adzcai/multilingual/multilingual-macaroni/.venv/bin/python /n/netscratch/kdbrantley_lab/Lab/adzcai/multilingual/multilingual-macaroni/figures/fig3_retrieval_trajectory.py --out test/out/figures_from_paper_csvs
+wrote /n/netscratch/kdbrantley_lab/Lab/adzcai/multilingual/multilingual-macaroni/test/out/figures_from_paper_csvs/fig3_retrieval_trajectory.pdf
+
+=== fig4_exposure_generalization ===
+$ /n/netscratch/kdbrantley_lab/Lab/adzcai/multilingual/multilingual-macaroni/.venv/bin/python /n/netscratch/kdbrantley_lab/Lab/adzcai/multilingual/multilingual-macaroni/figures/fig4_exposure_generalization.py --out test/out/figures_from_paper_csvs
+wrote /n/netscratch/kdbrantley_lab/Lab/adzcai/multilingual/multilingual-macaroni/test/out/figures_from_paper_csvs/fig4_exposure_generalization.pdf
+  all       delta: seen +0.0948+-0.0092  never +0.0614+-0.0070  retention 64.7%  n=1,102
+  balanced  delta: seen +0.1568+-0.0106  never +0.1204+-0.0130  retention 76.8%  n=617
+
+=== fig6_retrieval_median_rank ===
+$ /n/netscratch/kdbrantley_lab/Lab/adzcai/multilingual/multilingual-macaroni/.venv/bin/python /n/netscratch/kdbrantley_lab/Lab/adzcai/multilingual/multilingual-macaroni/figures/fig6_retrieval_median_rank.py --out test/out/figures_from_paper_csvs
+wrote /n/netscratch/kdbrantley_lab/Lab/adzcai/multilingual/multilingual-macaroni/test/out/figures_from_paper_csvs/fig6_retrieval_median_rank.pdf
+
+=== fig7_retrieval_all_conditions ===
+$ /n/netscratch/kdbrantley_lab/Lab/adzcai/multilingual/multilingual-macaroni/.venv/bin/python /n/netscratch/kdbrantley_lab/Lab/adzcai/multilingual/multilingual-macaroni/figures/fig7_retrieval_all_conditions.py --out test/out/figures_from_paper_csvs
+wrote /n/netscratch/kdbrantley_lab/Lab/adzcai/multilingual/multilingual-macaroni/test/out/figures_from_paper_csvs/fig7_retrieval_per_layer_all8.pdf
+
+=== fig8_word_divergence ===
+$ /n/netscratch/kdbrantley_lab/Lab/adzcai/multilingual/multilingual-macaroni/.venv/bin/python /n/netscratch/kdbrantley_lab/Lab/adzcai/multilingual/multilingual-macaroni/figures/fig8_word_divergence.py --out test/out/figures_from_paper_csvs
+wrote /n/netscratch/kdbrantley_lab/Lab/adzcai/multilingual/multilingual-macaroni/test/out/figures_from_paper_csvs/fig8_word_divergence_by_layer.pdf
+
+==================================================
+SUMMARY
+  ok                   fig2_retrieval_per_layer
+  ok                   fig3_retrieval_trajectory
+  ok                   fig4_exposure_generalization
+  ok                   fig6_retrieval_median_rank
+  ok                   fig7_retrieval_all_conditions
+  ok                   fig8_word_divergence

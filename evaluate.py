@@ -91,7 +91,11 @@ def eval_multilingual_dir(eval_dir: Path) -> Path:
 
 
 def run(cmd, cwd, env=None):
-    print(f"[run] (cwd={cwd}) {' '.join(str(c) for c in cmd)}")
+    print(f"[run] (cwd={cwd}) {' '.join(str(c) for c in cmd)}", flush=True)
+    env = dict(os.environ if env is None else env)
+    # The fine-tuning scripts use the HF Trainer, whose default reporting picks up an
+    # installed wandb and then demands a login; keep evaluation self-contained.
+    env.setdefault("WANDB_DISABLED", "true")
     subprocess.run([str(c) for c in cmd], check=True, cwd=str(cwd), env=env)
 
 

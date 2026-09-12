@@ -1,0 +1,50 @@
+diff --git a/multilingual/finetune/pos_data.py b/multilingual/finetune/pos_data.py
+index c18651a..d52be90 100644
+--- a/multilingual/finetune/pos_data.py
++++ b/multilingual/finetune/pos_data.py
+@@ -18,8 +18,10 @@ from __future__ import annotations
+ from typing import Iterable, Mapping, Union
+ 
+ from datasets import (
++    ClassLabel,
+     Dataset,
+     DatasetDict,
++    Sequence,
+     concatenate_datasets,
+     load_dataset,
+ )
+@@ -88,6 +90,26 @@ def make_pos_split(
+     )
+ 
+ 
++# The 17 Universal Dependencies UPOS tags.  Newer `datasets` releases no longer run the
++# UD loading script (`trust_remote_code` is ignored) and fall back to the Hub's parquet
++# auto-conversion, where `upos` arrives as a list of tag STRINGS instead of the script's
++# Sequence(ClassLabel).  Everything downstream (the label-set consistency check in
++# build_pos_mixture, and finetune_token_classification's use of the ids as labels)
++# needs the ClassLabel form, so we restore it here.  Token accuracy is invariant to the
++# id order; alphabetical keeps the mapping deterministic and documented.
++UPOS_TAGS = ("ADJ", "ADP", "ADV", "AUX", "CCONJ", "DET", "INTJ", "NOUN", "NUM",
++             "PART", "PRON", "PROPN", "PUNCT", "SCONJ", "SYM", "VERB", "X")
++
++
++def _ensure_upos_classlabel(raw: DatasetDict, column: str = "upos") -> DatasetDict:
++    """Cast a string-typed `upos` column back to Sequence(ClassLabel(UPOS_TAGS))."""
++    first = next(iter(raw.values()))
++    inner = getattr(first.features[column], "feature", None)
++    if isinstance(inner, ClassLabel):
++        return raw
++    return raw.cast_column(column, Sequence(ClassLabel(names=list(UPOS_TAGS))))
++
++
+ def build_pos_split(
+     config: str,
+     max_sentences: int | None = None,
+@@ -105,6 +127,7 @@ def build_pos_split(
+     exposes the same configs and loads without `trust_remote_code`.
+     """
+     raw = load_dataset(dataset_name, config, trust_remote_code=trust_remote_code)
++    raw = _ensure_upos_classlabel(raw)
+     return make_pos_split(
+         raw,
+         max_sentences,

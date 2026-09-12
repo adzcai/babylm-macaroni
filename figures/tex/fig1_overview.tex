@@ -1,0 +1,21 @@
+% Paper Figure 1 (fig:overview): hand-drawn TikZ, not a data figure.
+% Part A = fig1_examples.tex (verbatim corpus snippets), part B = fig1_corpus.tex
+% (corpus composition). Build: bash build.sh  ->  fig1_overview.pdf
+\documentclass[10pt]{article}
+\input{_preamble}
+\begin{document}
+\sbox{\figbox}{%
+\begin{minipage}{7.7cm}\centering
+\panelhdr{A}{Examples of each data type}
+
+\vspace{1pt}
+\input{fig1_examples}
+
+\vspace{2pt}
+\panelhdr{B}{Corpus composition}
+
+\vspace{1pt}
+\input{fig1_corpus}
+\end{minipage}}
+\shipfigure
+\end{document}

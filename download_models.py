@@ -4,7 +4,9 @@
 Usage: python download_models.py [--only switch curriculum ...] [--seeds 42 43 44]
 
 The models live in ONE repo, `drooryck/multilingual-macaroni-models`, with each
-trained model on its own branch (revision). Branch naming:
+trained model on its own branch (revision). The paper trains seeds 42-49; the Hub
+holds the final checkpoints of seeds 42-44 (train the others with train.py).
+Branch naming:
   - seed 42 -> `<condition>`          (bare name)
   - seed 43 -> `<condition>-s43`
   - seed 44 -> `<condition>-s44`

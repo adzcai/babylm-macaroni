@@ -1,0 +1,135 @@
+NVIDIA H200, 143771 MiB
+python: /n/netscratch/kdbrantley_lab/Lab/adzcai/multilingual/multilingual-macaroni/.venv/bin/python  Python 3.12.14
+Generating dev split:   0%|          | 0/997 [00:00<?, ? examples/s]Generating dev split: 100%|██████████| 997/997 [00:00<00:00, 16479.36 examples/s]
+Generating devtest split:   0%|          | 0/1012 [00:00<?, ? examples/s]Generating devtest split: 100%|██████████| 1012/1012 [00:00<00:00, 136901.65 examples/s]
+Generating dev split:   0%|          | 0/997 [00:00<?, ? examples/s]Generating dev split: 100%|██████████| 997/997 [00:00<00:00, 82673.75 examples/s]
+Generating devtest split:   0%|          | 0/1012 [00:00<?, ? examples/s]Generating devtest split: 100%|██████████| 1012/1012 [00:00<00:00, 67344.17 examples/s]
+Generating dev split:   0%|          | 0/997 [00:00<?, ? examples/s]Generating dev split: 100%|██████████| 997/997 [00:00<00:00, 52285.89 examples/s]
+Generating devtest split:   0%|          | 0/1012 [00:00<?, ? examples/s]Generating devtest split: 100%|██████████| 1012/1012 [00:00<00:00, 145893.85 examples/s]
+[finals] scoring 12 checkpoints
+probe: FLORES+ dev, 997 aligned sentences x ['eng', 'nld', 'zho']; CSLS k=10
+[curriculum] loading /n/netscratch/kdbrantley_lab/Lab/adzcai/multilingual/multilingual-macaroni/test/models/curriculum
+[transformers] `torch_dtype` is deprecated! Use `dtype` instead!
+[transformers] The following generation flags are not valid and may be ignored: ['output_hidden_states']. Set `TRANSFORMERS_VERBOSITY=info` for more details.
+Loading weights:   0%|          | 0/148 [00:00<?, ?it/s]Loading weights:  83%|████████▎ | 123/148 [00:00<00:00, 1216.84it/s]Loading weights: 100%|██████████| 148/148 [00:00<00:00, 1294.70it/s]
+[curriculum-s43] loading /n/netscratch/kdbrantley_lab/Lab/adzcai/multilingual/multilingual-macaroni/test/models/curriculum-s43
+Loading weights:   0%|          | 0/148 [00:00<?, ?it/s]Loading weights: 100%|██████████| 148/148 [00:00<00:00, 1537.12it/s]
+[curriculum-s44] loading /n/netscratch/kdbrantley_lab/Lab/adzcai/multilingual/multilingual-macaroni/test/models/curriculum-s44
+Loading weights:   0%|          | 0/148 [00:00<?, ?it/s]Loading weights:  81%|████████  | 120/148 [00:00<00:00, 1187.78it/s]Loading weights: 100%|██████████| 148/148 [00:00<00:00, 1291.23it/s]
+[curriculum_noswitch] loading /n/netscratch/kdbrantley_lab/Lab/adzcai/multilingual/multilingual-macaroni/test/models/curriculum_noswitch
+Loading weights:   0%|          | 0/148 [00:00<?, ?it/s]Loading weights:  74%|███████▎  | 109/148 [00:00<00:00, 998.60it/s]Loading weights: 100%|██████████| 148/148 [00:00<00:00, 1156.17it/s]
+[curriculum_noswitch-s43] loading /n/netscratch/kdbrantley_lab/Lab/adzcai/multilingual/multilingual-macaroni/test/models/curriculum_noswitch-s43
+Loading weights:   0%|          | 0/148 [00:00<?, ?it/s]Loading weights: 100%|██████████| 148/148 [00:00<00:00, 1528.07it/s]
+[curriculum_noswitch-s44] loading /n/netscratch/kdbrantley_lab/Lab/adzcai/multilingual/multilingual-macaroni/test/models/curriculum_noswitch-s44
+Loading weights:   0%|          | 0/148 [00:00<?, ?it/s]Loading weights: 100%|██████████| 148/148 [00:00<00:00, 1627.95it/s]
+[switch] loading /n/netscratch/kdbrantley_lab/Lab/adzcai/multilingual/multilingual-macaroni/test/models/switch
+Loading weights:   0%|          | 0/148 [00:00<?, ?it/s]Loading weights:  71%|███████   | 105/148 [00:00<00:00, 1022.60it/s]Loading weights: 100%|██████████| 148/148 [00:00<00:00, 1078.41it/s]
+[switch-s43] loading /n/netscratch/kdbrantley_lab/Lab/adzcai/multilingual/multilingual-macaroni/test/models/switch-s43
+Loading weights:   0%|          | 0/148 [00:00<?, ?it/s]Loading weights:  76%|███████▌  | 112/148 [00:00<00:00, 1048.57it/s]Loading weights: 100%|██████████| 148/148 [00:00<00:00, 1165.69it/s]
+[switch-s44] loading /n/netscratch/kdbrantley_lab/Lab/adzcai/multilingual/multilingual-macaroni/test/models/switch-s44
+Loading weights:   0%|          | 0/148 [00:00<?, ?it/s]Loading weights: 100%|██████████| 148/148 [00:00<00:00, 1502.78it/s]
+[noswitch] loading /n/netscratch/kdbrantley_lab/Lab/adzcai/multilingual/multilingual-macaroni/test/models/noswitch
+Loading weights:   0%|          | 0/148 [00:00<?, ?it/s]Loading weights:  32%|███▏      | 47/148 [00:00<00:00, 459.56it/s]Loading weights: 100%|██████████| 148/148 [00:00<00:00, 791.72it/s]
+[noswitch-s43] loading /n/netscratch/kdbrantley_lab/Lab/adzcai/multilingual/multilingual-macaroni/test/models/noswitch-s43
+Loading weights:   0%|          | 0/148 [00:00<?, ?it/s]Loading weights:  86%|████████▌ | 127/148 [00:00<00:00, 1231.25it/s]Loading weights: 100%|██████████| 148/148 [00:00<00:00, 1321.79it/s]
+[noswitch-s44] loading /n/netscratch/kdbrantley_lab/Lab/adzcai/multilingual/multilingual-macaroni/test/models/noswitch-s44
+Loading weights:   0%|          | 0/148 [00:00<?, ?it/s]Loading weights:  93%|█████████▎| 138/148 [00:00<00:00, 1369.26it/s]Loading weights: 100%|██████████| 148/148 [00:00<00:00, 1462.67it/s]
+[finals] wrote 468 rows -> /n/netscratch/kdbrantley_lab/Lab/adzcai/multilingual/multilingual-macaroni/test/out/results/retrieval_finals.csv
+[controls] scoring 12 checkpoints
+probe: FLORES+ dev, 997 aligned sentences x ['eng', 'nld', 'zho']; CSLS k=10
+[word] loading /n/netscratch/kdbrantley_lab/Lab/adzcai/multilingual/multilingual-macaroni/test/models/word
+[transformers] `torch_dtype` is deprecated! Use `dtype` instead!
+[transformers] The following generation flags are not valid and may be ignored: ['output_hidden_states']. Set `TRANSFORMERS_VERBOSITY=info` for more details.
+Loading weights:   0%|          | 0/148 [00:00<?, ?it/s]Loading weights: 100%|██████████| 148/148 [00:00<00:00, 1589.60it/s]
+[word-s43] loading /n/netscratch/kdbrantley_lab/Lab/adzcai/multilingual/multilingual-macaroni/test/models/word-s43
+Loading weights:   0%|          | 0/148 [00:00<?, ?it/s]Loading weights: 100%|██████████| 148/148 [00:00<00:00, 1515.04it/s]
+[word-s44] loading /n/netscratch/kdbrantley_lab/Lab/adzcai/multilingual/multilingual-macaroni/test/models/word-s44
+Loading weights:   0%|          | 0/148 [00:00<?, ?it/s]Loading weights:  80%|███████▉  | 118/148 [00:00<00:00, 1162.75it/s]Loading weights: 100%|██████████| 148/148 [00:00<00:00, 1243.25it/s]
+[sent] loading /n/netscratch/kdbrantley_lab/Lab/adzcai/multilingual/multilingual-macaroni/test/models/sent
+Loading weights:   0%|          | 0/148 [00:00<?, ?it/s]Loading weights: 100%|██████████| 148/148 [00:00<00:00, 1554.69it/s]
+[sent-s43] loading /n/netscratch/kdbrantley_lab/Lab/adzcai/multilingual/multilingual-macaroni/test/models/sent-s43
+Loading weights:   0%|          | 0/148 [00:00<?, ?it/s]Loading weights:  68%|██████▊   | 100/148 [00:00<00:00, 992.16it/s]Loading weights: 100%|██████████| 148/148 [00:00<00:00, 1117.56it/s]
+[sent-s44] loading /n/netscratch/kdbrantley_lab/Lab/adzcai/multilingual/multilingual-macaroni/test/models/sent-s44
+Loading weights:   0%|          | 0/148 [00:00<?, ?it/s]Loading weights:  37%|███▋      | 55/148 [00:00<00:00, 296.43it/s]Loading weights: 100%|██████████| 148/148 [00:00<00:00, 592.14it/s]
+[par] loading /n/netscratch/kdbrantley_lab/Lab/adzcai/multilingual/multilingual-macaroni/test/models/par
+Loading weights:   0%|          | 0/148 [00:00<?, ?it/s]Loading weights:  71%|███████   | 105/148 [00:00<00:00, 1048.85it/s]Loading weights: 100%|██████████| 148/148 [00:00<00:00, 1106.86it/s]
+[par-s43] loading /n/netscratch/kdbrantley_lab/Lab/adzcai/multilingual/multilingual-macaroni/test/models/par-s43
+Loading weights:   0%|          | 0/148 [00:00<?, ?it/s]Loading weights: 100%|██████████| 148/148 [00:00<00:00, 1600.95it/s]
+[par-s44] loading /n/netscratch/kdbrantley_lab/Lab/adzcai/multilingual/multilingual-macaroni/test/models/par-s44
+Loading weights:   0%|          | 0/148 [00:00<?, ?it/s]Loading weights:  95%|█████████▍| 140/148 [00:00<00:00, 1389.60it/s]Loading weights: 100%|██████████| 148/148 [00:00<00:00, 1463.35it/s]
+[salad] loading /n/netscratch/kdbrantley_lab/Lab/adzcai/multilingual/multilingual-macaroni/test/models/salad
+Loading weights:   0%|          | 0/148 [00:00<?, ?it/s]Loading weights:  71%|███████   | 105/148 [00:00<00:00, 997.76it/s]Loading weights: 100%|██████████| 148/148 [00:00<00:00, 1096.54it/s]
+[salad-s43] loading /n/netscratch/kdbrantley_lab/Lab/adzcai/multilingual/multilingual-macaroni/test/models/salad-s43
+Loading weights:   0%|          | 0/148 [00:00<?, ?it/s]Loading weights:  45%|████▌     | 67/148 [00:00<00:00, 658.90it/s]Loading weights:  90%|████████▉ | 133/148 [00:00<00:00, 630.06it/s]Loading weights: 100%|██████████| 148/148 [00:00<00:00, 659.30it/s]
+[salad-s44] loading /n/netscratch/kdbrantley_lab/Lab/adzcai/multilingual/multilingual-macaroni/test/models/salad-s44
+Loading weights:   0%|          | 0/148 [00:00<?, ?it/s]Loading weights:  87%|████████▋ | 129/148 [00:00<00:00, 1282.01it/s]Loading weights: 100%|██████████| 148/148 [00:00<00:00, 1432.60it/s]
+[controls] wrote 468 rows -> /n/netscratch/kdbrantley_lab/Lab/adzcai/multilingual/multilingual-macaroni/test/out/results/retrieval_controls.csv
+[trajectory] scoring 20 checkpoints
+probe: FLORES+ dev, 997 aligned sentences x ['eng', 'nld', 'zho']; CSLS k=10
+[cur_cs-s42-s1e0] loading /n/netscratch/kdbrantley_lab/Lab/adzcai/multilingual/multilingual-macaroni/test/models_traj/curriculum/stage1/checkpoint-0
+[transformers] `torch_dtype` is deprecated! Use `dtype` instead!
+[transformers] The following generation flags are not valid and may be ignored: ['output_hidden_states']. Set `TRANSFORMERS_VERBOSITY=info` for more details.
+Loading weights:   0%|          | 0/148 [00:00<?, ?it/s]Loading weights:  93%|█████████▎| 138/148 [00:00<00:00, 1375.53it/s]Loading weights: 100%|██████████| 148/148 [00:00<00:00, 1469.22it/s]
+[cur_cs-s42-s1e1] loading /n/netscratch/kdbrantley_lab/Lab/adzcai/multilingual/multilingual-macaroni/test/models_traj/curriculum/stage1/checkpoint-2734
+Loading weights:   0%|          | 0/148 [00:00<?, ?it/s]Loading weights:  93%|█████████▎| 138/148 [00:00<00:00, 1300.11it/s]Loading weights: 100%|██████████| 148/148 [00:00<00:00, 1388.76it/s]
+[cur_cs-s42-s1e5] loading /n/netscratch/kdbrantley_lab/Lab/adzcai/multilingual/multilingual-macaroni/test/models_traj/curriculum/stage1/checkpoint-13670
+Loading weights:   0%|          | 0/148 [00:00<?, ?it/s]Loading weights: 100%|██████████| 148/148 [00:00<00:00, 1889.84it/s]
+[cur_cs-s42-s1e10] loading /n/netscratch/kdbrantley_lab/Lab/adzcai/multilingual/multilingual-macaroni/test/models_traj/curriculum/stage1/checkpoint-27340
+Loading weights:   0%|          | 0/148 [00:00<?, ?it/s]Loading weights:  87%|████████▋ | 129/148 [00:00<00:00, 1256.23it/s]Loading weights: 100%|██████████| 148/148 [00:00<00:00, 1350.84it/s]
+[cur_cs-s42-s2e1] loading /n/netscratch/kdbrantley_lab/Lab/adzcai/multilingual/multilingual-macaroni/test/models_traj/curriculum/stage2/checkpoint-2732
+Loading weights:   0%|          | 0/148 [00:00<?, ?it/s]Loading weights: 100%|██████████| 148/148 [00:00<00:00, 1565.57it/s]
+[cur_cs-s42-s2e5] loading /n/netscratch/kdbrantley_lab/Lab/adzcai/multilingual/multilingual-macaroni/test/models_traj/curriculum/stage2/checkpoint-13660
+Loading weights:   0%|          | 0/148 [00:00<?, ?it/s]Loading weights: 100%|██████████| 148/148 [00:00<00:00, 1493.55it/s]
+[cur_cs-s42-s2e10] loading /n/netscratch/kdbrantley_lab/Lab/adzcai/multilingual/multilingual-macaroni/test/models_traj/curriculum/stage2/checkpoint-27320
+Loading weights:   0%|          | 0/148 [00:00<?, ?it/s]Loading weights: 100%|██████████| 148/148 [00:00<00:00, 1928.24it/s]
+[cur_cs-s42-s3e1] loading /n/netscratch/kdbrantley_lab/Lab/adzcai/multilingual/multilingual-macaroni/test/models_traj/curriculum/stage3/checkpoint-2596
+Loading weights:   0%|          | 0/148 [00:00<?, ?it/s]Loading weights: 100%|██████████| 148/148 [00:00<00:00, 1490.79it/s]
+[cur_cs-s42-s3e5] loading /n/netscratch/kdbrantley_lab/Lab/adzcai/multilingual/multilingual-macaroni/test/models_traj/curriculum/stage3/checkpoint-12980
+Loading weights:   0%|          | 0/148 [00:00<?, ?it/s]Loading weights:  94%|█████████▍| 139/148 [00:00<00:00, 1366.22it/s]Loading weights: 100%|██████████| 148/148 [00:00<00:00, 1446.86it/s]
+[cur_cs-s42-s3e10] loading /n/netscratch/kdbrantley_lab/Lab/adzcai/multilingual/multilingual-macaroni/test/models_traj/curriculum/stage3/checkpoint-25960
+Loading weights:   0%|          | 0/148 [00:00<?, ?it/s]Loading weights:  93%|█████████▎| 138/148 [00:00<00:00, 1368.86it/s]Loading weights: 100%|██████████| 148/148 [00:00<00:00, 1461.72it/s]
+[cur_noswitch-s42-s1e0] loading /n/netscratch/kdbrantley_lab/Lab/adzcai/multilingual/multilingual-macaroni/test/models_traj/curriculum_noswitch/stage1/checkpoint-0
+Loading weights:   0%|          | 0/148 [00:00<?, ?it/s]Loading weights:  72%|███████▏  | 107/148 [00:00<00:00, 1048.82it/s]Loading weights: 100%|██████████| 148/148 [00:00<00:00, 995.26it/s] 
+[cur_noswitch-s42-s1e1] loading /n/netscratch/kdbrantley_lab/Lab/adzcai/multilingual/multilingual-macaroni/test/models_traj/curriculum_noswitch/stage1/checkpoint-2628
+Loading weights:   0%|          | 0/148 [00:00<?, ?it/s]Loading weights: 100%|██████████| 148/148 [00:00<00:00, 1989.56it/s]
+[cur_noswitch-s42-s1e5] loading /n/netscratch/kdbrantley_lab/Lab/adzcai/multilingual/multilingual-macaroni/test/models_traj/curriculum_noswitch/stage1/checkpoint-13140
+Loading weights:   0%|          | 0/148 [00:00<?, ?it/s]Loading weights: 100%|██████████| 148/148 [00:00<00:00, 1496.79it/s]
+[cur_noswitch-s42-s1e10] loading /n/netscratch/kdbrantley_lab/Lab/adzcai/multilingual/multilingual-macaroni/test/models_traj/curriculum_noswitch/stage1/checkpoint-26280
+Loading weights:   0%|          | 0/148 [00:00<?, ?it/s]Loading weights: 100%|██████████| 148/148 [00:00<00:00, 1881.41it/s]
+[cur_noswitch-s42-s2e1] loading /n/netscratch/kdbrantley_lab/Lab/adzcai/multilingual/multilingual-macaroni/test/models_traj/curriculum_noswitch/stage2/checkpoint-2612
+Loading weights:   0%|          | 0/148 [00:00<?, ?it/s]Loading weights: 100%|██████████| 148/148 [00:00<00:00, 1898.71it/s]
+[cur_noswitch-s42-s2e5] loading /n/netscratch/kdbrantley_lab/Lab/adzcai/multilingual/multilingual-macaroni/test/models_traj/curriculum_noswitch/stage2/checkpoint-13060
+Loading weights:   0%|          | 0/148 [00:00<?, ?it/s]Loading weights: 100%|██████████| 148/148 [00:00<00:00, 1846.88it/s]
+[cur_noswitch-s42-s2e10] loading /n/netscratch/kdbrantley_lab/Lab/adzcai/multilingual/multilingual-macaroni/test/models_traj/curriculum_noswitch/stage2/checkpoint-26120
+Loading weights:   0%|          | 0/148 [00:00<?, ?it/s]Loading weights: 100%|██████████| 148/148 [00:00<00:00, 1973.93it/s]
+[cur_noswitch-s42-s3e1] loading /n/netscratch/kdbrantley_lab/Lab/adzcai/multilingual/multilingual-macaroni/test/models_traj/curriculum_noswitch/stage3/checkpoint-2596
+Loading weights:   0%|          | 0/148 [00:00<?, ?it/s]Loading weights:  90%|████████▉ | 133/148 [00:00<00:00, 1321.13it/s]Loading weights: 100%|██████████| 148/148 [00:00<00:00, 1462.60it/s]
+[cur_noswitch-s42-s3e5] loading /n/netscratch/kdbrantley_lab/Lab/adzcai/multilingual/multilingual-macaroni/test/models_traj/curriculum_noswitch/stage3/checkpoint-12980
+Loading weights:   0%|          | 0/148 [00:00<?, ?it/s]Loading weights: 100%|██████████| 148/148 [00:00<00:00, 1644.47it/s]
+[cur_noswitch-s42-s3e10] loading /n/netscratch/kdbrantley_lab/Lab/adzcai/multilingual/multilingual-macaroni/test/models_traj/curriculum_noswitch/stage3/checkpoint-25960
+Loading weights:   0%|          | 0/148 [00:00<?, ?it/s]Loading weights: 100%|██████████| 148/148 [00:00<00:00, 1794.49it/s]
+[trajectory] wrote 780 rows -> /n/netscratch/kdbrantley_lab/Lab/adzcai/multilingual/multilingual-macaroni/test/out/results/retrieval_trajectory.csv
+
+=== fig2_retrieval_per_layer ===
+$ /n/netscratch/kdbrantley_lab/Lab/adzcai/multilingual/multilingual-macaroni/.venv/bin/python /n/netscratch/kdbrantley_lab/Lab/adzcai/multilingual/multilingual-macaroni/figures/fig2_retrieval_per_layer.py --out test/out/figures_regenerated --results-dir test/out/results
+wrote /n/netscratch/kdbrantley_lab/Lab/adzcai/multilingual/multilingual-macaroni/test/out/figures_regenerated/fig2_retrieval_per_layer.pdf
+
+=== fig3_retrieval_trajectory ===
+$ /n/netscratch/kdbrantley_lab/Lab/adzcai/multilingual/multilingual-macaroni/.venv/bin/python /n/netscratch/kdbrantley_lab/Lab/adzcai/multilingual/multilingual-macaroni/figures/fig3_retrieval_trajectory.py --out test/out/figures_regenerated --results-dir test/out/results
+wrote /n/netscratch/kdbrantley_lab/Lab/adzcai/multilingual/multilingual-macaroni/test/out/figures_regenerated/fig3_retrieval_trajectory.pdf
+
+=== fig6_retrieval_median_rank ===
+$ /n/netscratch/kdbrantley_lab/Lab/adzcai/multilingual/multilingual-macaroni/.venv/bin/python /n/netscratch/kdbrantley_lab/Lab/adzcai/multilingual/multilingual-macaroni/figures/fig6_retrieval_median_rank.py --out test/out/figures_regenerated --results-dir test/out/results
+wrote /n/netscratch/kdbrantley_lab/Lab/adzcai/multilingual/multilingual-macaroni/test/out/figures_regenerated/fig6_retrieval_median_rank.pdf
+
+=== fig7_retrieval_all_conditions ===
+$ /n/netscratch/kdbrantley_lab/Lab/adzcai/multilingual/multilingual-macaroni/.venv/bin/python /n/netscratch/kdbrantley_lab/Lab/adzcai/multilingual/multilingual-macaroni/figures/fig7_retrieval_all_conditions.py --out test/out/figures_regenerated --results-dir test/out/results
+wrote /n/netscratch/kdbrantley_lab/Lab/adzcai/multilingual/multilingual-macaroni/test/out/figures_regenerated/fig7_retrieval_per_layer_all8.pdf
+
+==================================================
+SUMMARY
+  ok                   fig2_retrieval_per_layer
+  ok                   fig3_retrieval_trajectory
+  ok                   fig6_retrieval_median_rank
+  ok                   fig7_retrieval_all_conditions
+DONE

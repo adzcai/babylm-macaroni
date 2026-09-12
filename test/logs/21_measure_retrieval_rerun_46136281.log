@@ -1,0 +1,84 @@
+NVIDIA H200, 143771 MiB
+python: /n/netscratch/kdbrantley_lab/Lab/adzcai/multilingual/multilingual-macaroni/.venv/bin/python  Python 3.12.14
+transformers 4.57.6
+[finals] scoring 12 checkpoints
+probe: FLORES+ dev, 997 aligned sentences x ['eng', 'nld', 'zho']; CSLS k=10
+[curriculum] loading /n/netscratch/kdbrantley_lab/Lab/adzcai/multilingual/multilingual-macaroni/test/models/curriculum
+`torch_dtype` is deprecated! Use `dtype` instead!
+The following generation flags are not valid and may be ignored: ['output_hidden_states']. Set `TRANSFORMERS_VERBOSITY=info` for more details.
+[curriculum-s43] loading /n/netscratch/kdbrantley_lab/Lab/adzcai/multilingual/multilingual-macaroni/test/models/curriculum-s43
+[curriculum-s44] loading /n/netscratch/kdbrantley_lab/Lab/adzcai/multilingual/multilingual-macaroni/test/models/curriculum-s44
+[curriculum_noswitch] loading /n/netscratch/kdbrantley_lab/Lab/adzcai/multilingual/multilingual-macaroni/test/models/curriculum_noswitch
+[curriculum_noswitch-s43] loading /n/netscratch/kdbrantley_lab/Lab/adzcai/multilingual/multilingual-macaroni/test/models/curriculum_noswitch-s43
+[curriculum_noswitch-s44] loading /n/netscratch/kdbrantley_lab/Lab/adzcai/multilingual/multilingual-macaroni/test/models/curriculum_noswitch-s44
+[switch] loading /n/netscratch/kdbrantley_lab/Lab/adzcai/multilingual/multilingual-macaroni/test/models/switch
+[switch-s43] loading /n/netscratch/kdbrantley_lab/Lab/adzcai/multilingual/multilingual-macaroni/test/models/switch-s43
+[switch-s44] loading /n/netscratch/kdbrantley_lab/Lab/adzcai/multilingual/multilingual-macaroni/test/models/switch-s44
+[noswitch] loading /n/netscratch/kdbrantley_lab/Lab/adzcai/multilingual/multilingual-macaroni/test/models/noswitch
+[noswitch-s43] loading /n/netscratch/kdbrantley_lab/Lab/adzcai/multilingual/multilingual-macaroni/test/models/noswitch-s43
+[noswitch-s44] loading /n/netscratch/kdbrantley_lab/Lab/adzcai/multilingual/multilingual-macaroni/test/models/noswitch-s44
+[finals] wrote 468 rows -> /n/netscratch/kdbrantley_lab/Lab/adzcai/multilingual/multilingual-macaroni/test/out/results/retrieval_finals.csv
+[controls] scoring 12 checkpoints
+probe: FLORES+ dev, 997 aligned sentences x ['eng', 'nld', 'zho']; CSLS k=10
+[word] loading /n/netscratch/kdbrantley_lab/Lab/adzcai/multilingual/multilingual-macaroni/test/models/word
+[word-s43] loading /n/netscratch/kdbrantley_lab/Lab/adzcai/multilingual/multilingual-macaroni/test/models/word-s43
+[word-s44] loading /n/netscratch/kdbrantley_lab/Lab/adzcai/multilingual/multilingual-macaroni/test/models/word-s44
+[sent] loading /n/netscratch/kdbrantley_lab/Lab/adzcai/multilingual/multilingual-macaroni/test/models/sent
+[sent-s43] loading /n/netscratch/kdbrantley_lab/Lab/adzcai/multilingual/multilingual-macaroni/test/models/sent-s43
+[sent-s44] loading /n/netscratch/kdbrantley_lab/Lab/adzcai/multilingual/multilingual-macaroni/test/models/sent-s44
+[par] loading /n/netscratch/kdbrantley_lab/Lab/adzcai/multilingual/multilingual-macaroni/test/models/par
+[par-s43] loading /n/netscratch/kdbrantley_lab/Lab/adzcai/multilingual/multilingual-macaroni/test/models/par-s43
+[par-s44] loading /n/netscratch/kdbrantley_lab/Lab/adzcai/multilingual/multilingual-macaroni/test/models/par-s44
+[salad] loading /n/netscratch/kdbrantley_lab/Lab/adzcai/multilingual/multilingual-macaroni/test/models/salad
+[salad-s43] loading /n/netscratch/kdbrantley_lab/Lab/adzcai/multilingual/multilingual-macaroni/test/models/salad-s43
+[salad-s44] loading /n/netscratch/kdbrantley_lab/Lab/adzcai/multilingual/multilingual-macaroni/test/models/salad-s44
+[controls] wrote 468 rows -> /n/netscratch/kdbrantley_lab/Lab/adzcai/multilingual/multilingual-macaroni/test/out/results/retrieval_controls.csv
+[trajectory] scoring 20 checkpoints
+probe: FLORES+ dev, 997 aligned sentences x ['eng', 'nld', 'zho']; CSLS k=10
+[cur_cs-s42-s1e0] loading /n/netscratch/kdbrantley_lab/Lab/adzcai/multilingual/multilingual-macaroni/test/models_traj/curriculum/stage1/checkpoint-0
+`torch_dtype` is deprecated! Use `dtype` instead!
+The following generation flags are not valid and may be ignored: ['output_hidden_states']. Set `TRANSFORMERS_VERBOSITY=info` for more details.
+[cur_cs-s42-s1e1] loading /n/netscratch/kdbrantley_lab/Lab/adzcai/multilingual/multilingual-macaroni/test/models_traj/curriculum/stage1/checkpoint-2734
+[cur_cs-s42-s1e5] loading /n/netscratch/kdbrantley_lab/Lab/adzcai/multilingual/multilingual-macaroni/test/models_traj/curriculum/stage1/checkpoint-13670
+[cur_cs-s42-s1e10] loading /n/netscratch/kdbrantley_lab/Lab/adzcai/multilingual/multilingual-macaroni/test/models_traj/curriculum/stage1/checkpoint-27340
+[cur_cs-s42-s2e1] loading /n/netscratch/kdbrantley_lab/Lab/adzcai/multilingual/multilingual-macaroni/test/models_traj/curriculum/stage2/checkpoint-2732
+[cur_cs-s42-s2e5] loading /n/netscratch/kdbrantley_lab/Lab/adzcai/multilingual/multilingual-macaroni/test/models_traj/curriculum/stage2/checkpoint-13660
+[cur_cs-s42-s2e10] loading /n/netscratch/kdbrantley_lab/Lab/adzcai/multilingual/multilingual-macaroni/test/models_traj/curriculum/stage2/checkpoint-27320
+[cur_cs-s42-s3e1] loading /n/netscratch/kdbrantley_lab/Lab/adzcai/multilingual/multilingual-macaroni/test/models_traj/curriculum/stage3/checkpoint-2596
+[cur_cs-s42-s3e5] loading /n/netscratch/kdbrantley_lab/Lab/adzcai/multilingual/multilingual-macaroni/test/models_traj/curriculum/stage3/checkpoint-12980
+[cur_cs-s42-s3e10] loading /n/netscratch/kdbrantley_lab/Lab/adzcai/multilingual/multilingual-macaroni/test/models_traj/curriculum/stage3/checkpoint-25960
+[cur_noswitch-s42-s1e0] loading /n/netscratch/kdbrantley_lab/Lab/adzcai/multilingual/multilingual-macaroni/test/models_traj/curriculum_noswitch/stage1/checkpoint-0
+[cur_noswitch-s42-s1e1] loading /n/netscratch/kdbrantley_lab/Lab/adzcai/multilingual/multilingual-macaroni/test/models_traj/curriculum_noswitch/stage1/checkpoint-2628
+[cur_noswitch-s42-s1e5] loading /n/netscratch/kdbrantley_lab/Lab/adzcai/multilingual/multilingual-macaroni/test/models_traj/curriculum_noswitch/stage1/checkpoint-13140
+[cur_noswitch-s42-s1e10] loading /n/netscratch/kdbrantley_lab/Lab/adzcai/multilingual/multilingual-macaroni/test/models_traj/curriculum_noswitch/stage1/checkpoint-26280
+[cur_noswitch-s42-s2e1] loading /n/netscratch/kdbrantley_lab/Lab/adzcai/multilingual/multilingual-macaroni/test/models_traj/curriculum_noswitch/stage2/checkpoint-2612
+[cur_noswitch-s42-s2e5] loading /n/netscratch/kdbrantley_lab/Lab/adzcai/multilingual/multilingual-macaroni/test/models_traj/curriculum_noswitch/stage2/checkpoint-13060
+[cur_noswitch-s42-s2e10] loading /n/netscratch/kdbrantley_lab/Lab/adzcai/multilingual/multilingual-macaroni/test/models_traj/curriculum_noswitch/stage2/checkpoint-26120
+[cur_noswitch-s42-s3e1] loading /n/netscratch/kdbrantley_lab/Lab/adzcai/multilingual/multilingual-macaroni/test/models_traj/curriculum_noswitch/stage3/checkpoint-2596
+[cur_noswitch-s42-s3e5] loading /n/netscratch/kdbrantley_lab/Lab/adzcai/multilingual/multilingual-macaroni/test/models_traj/curriculum_noswitch/stage3/checkpoint-12980
+[cur_noswitch-s42-s3e10] loading /n/netscratch/kdbrantley_lab/Lab/adzcai/multilingual/multilingual-macaroni/test/models_traj/curriculum_noswitch/stage3/checkpoint-25960
+[trajectory] wrote 780 rows -> /n/netscratch/kdbrantley_lab/Lab/adzcai/multilingual/multilingual-macaroni/test/out/results/retrieval_trajectory.csv
+
+=== fig2_retrieval_per_layer ===
+$ /n/netscratch/kdbrantley_lab/Lab/adzcai/multilingual/multilingual-macaroni/.venv/bin/python /n/netscratch/kdbrantley_lab/Lab/adzcai/multilingual/multilingual-macaroni/figures/fig2_retrieval_per_layer.py --out test/out/figures_regenerated --results-dir test/out/results
+wrote /n/netscratch/kdbrantley_lab/Lab/adzcai/multilingual/multilingual-macaroni/test/out/figures_regenerated/fig2_retrieval_per_layer.pdf
+
+=== fig3_retrieval_trajectory ===
+$ /n/netscratch/kdbrantley_lab/Lab/adzcai/multilingual/multilingual-macaroni/.venv/bin/python /n/netscratch/kdbrantley_lab/Lab/adzcai/multilingual/multilingual-macaroni/figures/fig3_retrieval_trajectory.py --out test/out/figures_regenerated --results-dir test/out/results
+wrote /n/netscratch/kdbrantley_lab/Lab/adzcai/multilingual/multilingual-macaroni/test/out/figures_regenerated/fig3_retrieval_trajectory.pdf
+
+=== fig6_retrieval_median_rank ===
+$ /n/netscratch/kdbrantley_lab/Lab/adzcai/multilingual/multilingual-macaroni/.venv/bin/python /n/netscratch/kdbrantley_lab/Lab/adzcai/multilingual/multilingual-macaroni/figures/fig6_retrieval_median_rank.py --out test/out/figures_regenerated --results-dir test/out/results
+wrote /n/netscratch/kdbrantley_lab/Lab/adzcai/multilingual/multilingual-macaroni/test/out/figures_regenerated/fig6_retrieval_median_rank.pdf
+
+=== fig7_retrieval_all_conditions ===
+$ /n/netscratch/kdbrantley_lab/Lab/adzcai/multilingual/multilingual-macaroni/.venv/bin/python /n/netscratch/kdbrantley_lab/Lab/adzcai/multilingual/multilingual-macaroni/figures/fig7_retrieval_all_conditions.py --out test/out/figures_regenerated --results-dir test/out/results
+wrote /n/netscratch/kdbrantley_lab/Lab/adzcai/multilingual/multilingual-macaroni/test/out/figures_regenerated/fig7_retrieval_per_layer_all8.pdf
+
+==================================================
+SUMMARY
+  ok                   fig2_retrieval_per_layer
+  ok                   fig3_retrieval_trajectory
+  ok                   fig6_retrieval_median_rank
+  ok                   fig7_retrieval_all_conditions
+DONE

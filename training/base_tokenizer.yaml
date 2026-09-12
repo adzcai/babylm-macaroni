@@ -1,0 +1,11 @@
+# Default values — override per run via tokenizer_overrides in tokenizer_train_eval_config.yaml
+datasets: "BabyLM-community/babylm-eng"
+dataset_fraction: 1.0
+dataset_fractions: null
+data_seed: 42
+stratify_by: ""
+vocab_size: 8192
+min_frequency: 2
+
+# set by tokenizer_train_eval_controller.py --- IGNORE ---
+output_dir: ""

@@ -1,0 +1,106 @@
+using HF_TOKEN from environment
+repo-id    : drooryck/multilingual-macaroni-models (model)
+models-dir : test/models
+conditions : switch, noswitch, word, sent, par, salad, curriculum, curriculum_noswitch
+seeds      : 42, 43, 44
+
+[switch seed=42] revision=switch -> test/models/switch
+Fetching 8 files:   0%|          | 0/8 [00:00<?, ?it/s]/n/netscratch/kdbrantley_lab/Lab/adzcai/multilingual/cs-analysis/.venv/lib64/python3.12/site-packages/huggingface_hub/file_download.py:986: UserWarning: `local_dir_use_symlinks` parameter is deprecated and will be ignored. The process to download files to a local folder has been updated and do not rely on symlinks anymore. You only need to pass a destination folder as`local_dir`.
+For more details, check out https://huggingface.co/docs/huggingface_hub/main/en/guides/download#download-files-to-local-folder.
+  warnings.warn(
+Fetching 8 files:  12%|█▎        | 1/8 [00:00<00:04,  1.63it/s]Fetching 8 files:  62%|██████▎   | 5/8 [00:08<00:05,  1.72s/it]Fetching 8 files: 100%|██████████| 8/8 [00:08<00:00,  1.04s/it]
+  ok -> /n/netscratch/kdbrantley_lab/Lab/adzcai/multilingual/multilingual-macaroni/test/models/switch
+
+[switch seed=43] revision=switch-s43 -> test/models/switch-s43
+Fetching 8 files:   0%|          | 0/8 [00:00<?, ?it/s]Fetching 8 files:  12%|█▎        | 1/8 [00:00<00:02,  2.50it/s]Fetching 8 files:  25%|██▌       | 2/8 [00:00<00:01,  3.95it/s]Fetching 8 files:  62%|██████▎   | 5/8 [00:07<00:04,  1.62s/it]Fetching 8 files: 100%|██████████| 8/8 [00:07<00:00,  1.14it/s]
+  ok -> /n/netscratch/kdbrantley_lab/Lab/adzcai/multilingual/multilingual-macaroni/test/models/switch-s43
+
+[switch seed=44] revision=switch-s44 -> test/models/switch-s44
+Fetching 8 files:   0%|          | 0/8 [00:00<?, ?it/s]Fetching 8 files:  12%|█▎        | 1/8 [00:00<00:02,  2.99it/s]Fetching 8 files:  38%|███▊      | 3/8 [00:00<00:00,  7.26it/s]Fetching 8 files:  62%|██████▎   | 5/8 [00:07<00:05,  1.90s/it]Fetching 8 files: 100%|██████████| 8/8 [00:07<00:00,  1.05it/s]
+  ok -> /n/netscratch/kdbrantley_lab/Lab/adzcai/multilingual/multilingual-macaroni/test/models/switch-s44
+
+[noswitch seed=42] revision=noswitch -> test/models/noswitch
+Fetching 8 files:   0%|          | 0/8 [00:00<?, ?it/s]Fetching 8 files:  12%|█▎        | 1/8 [00:00<00:01,  3.77it/s]Fetching 8 files:  25%|██▌       | 2/8 [00:00<00:01,  4.98it/s]Fetching 8 files:  62%|██████▎   | 5/8 [00:07<00:05,  1.87s/it]Fetching 8 files: 100%|██████████| 8/8 [00:07<00:00,  1.00it/s]
+  ok -> /n/netscratch/kdbrantley_lab/Lab/adzcai/multilingual/multilingual-macaroni/test/models/noswitch
+
+[noswitch seed=43] revision=noswitch-s43 -> test/models/noswitch-s43
+Fetching 8 files:   0%|          | 0/8 [00:00<?, ?it/s]Fetching 8 files:  12%|█▎        | 1/8 [00:00<00:01,  4.11it/s]Fetching 8 files:  25%|██▌       | 2/8 [00:00<00:01,  5.36it/s]Fetching 8 files:  62%|██████▎   | 5/8 [00:06<00:04,  1.56s/it]Fetching 8 files: 100%|██████████| 8/8 [00:06<00:00,  1.19it/s]
+  ok -> /n/netscratch/kdbrantley_lab/Lab/adzcai/multilingual/multilingual-macaroni/test/models/noswitch-s43
+
+[noswitch seed=44] revision=noswitch-s44 -> test/models/noswitch-s44
+Fetching 8 files:   0%|          | 0/8 [00:00<?, ?it/s]Fetching 8 files:  12%|█▎        | 1/8 [00:00<00:03,  1.92it/s]Fetching 8 files:  62%|██████▎   | 5/8 [00:09<00:06,  2.06s/it]Fetching 8 files: 100%|██████████| 8/8 [00:09<00:00,  1.23s/it]
+  ok -> /n/netscratch/kdbrantley_lab/Lab/adzcai/multilingual/multilingual-macaroni/test/models/noswitch-s44
+
+[word seed=42] revision=word -> test/models/word
+Fetching 8 files:   0%|          | 0/8 [00:00<?, ?it/s]Fetching 8 files:  12%|█▎        | 1/8 [00:00<00:02,  2.69it/s]Fetching 8 files:  25%|██▌       | 2/8 [00:00<00:01,  4.62it/s]Fetching 8 files:  62%|██████▎   | 5/8 [00:07<00:05,  1.72s/it]Fetching 8 files: 100%|██████████| 8/8 [00:07<00:00,  1.08it/s]
+  ok -> /n/netscratch/kdbrantley_lab/Lab/adzcai/multilingual/multilingual-macaroni/test/models/word
+
+[word seed=43] revision=word-s43 -> test/models/word-s43
+Fetching 8 files:   0%|          | 0/8 [00:00<?, ?it/s]Fetching 8 files:  12%|█▎        | 1/8 [00:00<00:02,  2.84it/s]Fetching 8 files:  62%|██████▎   | 5/8 [00:07<00:05,  1.67s/it]Fetching 8 files: 100%|██████████| 8/8 [00:07<00:00,  1.01it/s]
+  ok -> /n/netscratch/kdbrantley_lab/Lab/adzcai/multilingual/multilingual-macaroni/test/models/word-s43
+
+[word seed=44] revision=word-s44 -> test/models/word-s44
+Fetching 8 files:   0%|          | 0/8 [00:00<?, ?it/s]Fetching 8 files:  12%|█▎        | 1/8 [00:00<00:04,  1.55it/s]Fetching 8 files:  62%|██████▎   | 5/8 [00:05<00:03,  1.06s/it]Fetching 8 files: 100%|██████████| 8/8 [00:05<00:00,  1.55it/s]
+  ok -> /n/netscratch/kdbrantley_lab/Lab/adzcai/multilingual/multilingual-macaroni/test/models/word-s44
+
+[sent seed=42] revision=sent -> test/models/sent
+Fetching 8 files:   0%|          | 0/8 [00:00<?, ?it/s]Fetching 8 files:  12%|█▎        | 1/8 [00:00<00:02,  2.53it/s]Fetching 8 files:  62%|██████▎   | 5/8 [00:05<00:03,  1.12s/it]Fetching 8 files: 100%|██████████| 8/8 [00:05<00:00,  1.49it/s]
+  ok -> /n/netscratch/kdbrantley_lab/Lab/adzcai/multilingual/multilingual-macaroni/test/models/sent
+
+[sent seed=43] revision=sent-s43 -> test/models/sent-s43
+Fetching 8 files:   0%|          | 0/8 [00:00<?, ?it/s]Fetching 8 files:  12%|█▎        | 1/8 [00:00<00:02,  3.14it/s]Fetching 8 files:  62%|██████▎   | 5/8 [00:05<00:03,  1.15s/it]Fetching 8 files: 100%|██████████| 8/8 [00:05<00:00,  1.45it/s]
+  ok -> /n/netscratch/kdbrantley_lab/Lab/adzcai/multilingual/multilingual-macaroni/test/models/sent-s43
+
+[sent seed=44] revision=sent-s44 -> test/models/sent-s44
+Fetching 8 files:   0%|          | 0/8 [00:00<?, ?it/s]Fetching 8 files:  12%|█▎        | 1/8 [00:00<00:01,  4.45it/s]Fetching 8 files:  25%|██▌       | 2/8 [00:00<00:01,  5.35it/s]Fetching 8 files:  62%|██████▎   | 5/8 [00:05<00:03,  1.24s/it]Fetching 8 files: 100%|██████████| 8/8 [00:05<00:00,  1.49it/s]
+  ok -> /n/netscratch/kdbrantley_lab/Lab/adzcai/multilingual/multilingual-macaroni/test/models/sent-s44
+
+[par seed=42] revision=par -> test/models/par
+Fetching 8 files:   0%|          | 0/8 [00:00<?, ?it/s]Fetching 8 files:  12%|█▎        | 1/8 [00:00<00:02,  3.32it/s]Fetching 8 files:  62%|██████▎   | 5/8 [00:05<00:03,  1.19s/it]Fetching 8 files: 100%|██████████| 8/8 [00:05<00:00,  1.41it/s]
+  ok -> /n/netscratch/kdbrantley_lab/Lab/adzcai/multilingual/multilingual-macaroni/test/models/par
+
+[par seed=43] revision=par-s43 -> test/models/par-s43
+Fetching 8 files:   0%|          | 0/8 [00:00<?, ?it/s]Fetching 8 files:  12%|█▎        | 1/8 [00:00<00:02,  3.19it/s]Fetching 8 files:  62%|██████▎   | 5/8 [00:05<00:03,  1.14s/it]Fetching 8 files: 100%|██████████| 8/8 [00:05<00:00,  1.47it/s]
+  ok -> /n/netscratch/kdbrantley_lab/Lab/adzcai/multilingual/multilingual-macaroni/test/models/par-s43
+
+[par seed=44] revision=par-s44 -> test/models/par-s44
+Fetching 8 files:   0%|          | 0/8 [00:00<?, ?it/s]Fetching 8 files:  12%|█▎        | 1/8 [00:00<00:02,  2.46it/s]Fetching 8 files:  50%|█████     | 4/8 [00:00<00:00,  8.03it/s]Fetching 8 files:  75%|███████▌  | 6/8 [00:05<00:02,  1.08s/it]Fetching 8 files: 100%|██████████| 8/8 [00:05<00:00,  1.54it/s]
+  ok -> /n/netscratch/kdbrantley_lab/Lab/adzcai/multilingual/multilingual-macaroni/test/models/par-s44
+
+[salad seed=42] revision=salad -> test/models/salad
+Fetching 8 files:   0%|          | 0/8 [00:00<?, ?it/s]Fetching 8 files:  12%|█▎        | 1/8 [00:00<00:02,  2.97it/s]Fetching 8 files:  62%|██████▎   | 5/8 [00:04<00:02,  1.04it/s]Fetching 8 files: 100%|██████████| 8/8 [00:04<00:00,  1.73it/s]
+  ok -> /n/netscratch/kdbrantley_lab/Lab/adzcai/multilingual/multilingual-macaroni/test/models/salad
+
+[salad seed=43] revision=salad-s43 -> test/models/salad-s43
+Fetching 8 files:   0%|          | 0/8 [00:00<?, ?it/s]Fetching 8 files:  12%|█▎        | 1/8 [00:00<00:02,  2.83it/s]Fetching 8 files:  62%|██████▎   | 5/8 [00:04<00:02,  1.00it/s]Fetching 8 files: 100%|██████████| 8/8 [00:04<00:00,  1.67it/s]
+  ok -> /n/netscratch/kdbrantley_lab/Lab/adzcai/multilingual/multilingual-macaroni/test/models/salad-s43
+
+[salad seed=44] revision=salad-s44 -> test/models/salad-s44
+Fetching 8 files:   0%|          | 0/8 [00:00<?, ?it/s]Fetching 8 files:  12%|█▎        | 1/8 [00:00<00:01,  4.29it/s]Fetching 8 files:  25%|██▌       | 2/8 [00:00<00:01,  3.06it/s]Fetching 8 files:  50%|█████     | 4/8 [00:00<00:00,  5.06it/s]Fetching 8 files:  62%|██████▎   | 5/8 [00:06<00:05,  1.84s/it]Fetching 8 files: 100%|██████████| 8/8 [00:06<00:00,  1.25it/s]
+  ok -> /n/netscratch/kdbrantley_lab/Lab/adzcai/multilingual/multilingual-macaroni/test/models/salad-s44
+
+[curriculum seed=42] revision=curriculum -> test/models/curriculum
+Fetching 8 files:   0%|          | 0/8 [00:00<?, ?it/s]Fetching 8 files:  12%|█▎        | 1/8 [00:00<00:02,  3.00it/s]Fetching 8 files:  50%|█████     | 4/8 [00:00<00:00,  7.53it/s]Fetching 8 files:  62%|██████▎   | 5/8 [00:05<00:04,  1.34s/it]Fetching 8 files: 100%|██████████| 8/8 [00:05<00:00,  1.59it/s]
+  ok -> /n/netscratch/kdbrantley_lab/Lab/adzcai/multilingual/multilingual-macaroni/test/models/curriculum
+
+[curriculum seed=43] revision=curriculum-s43 -> test/models/curriculum-s43
+Fetching 8 files:   0%|          | 0/8 [00:00<?, ?it/s]Fetching 8 files:  12%|█▎        | 1/8 [00:00<00:03,  1.77it/s]Fetching 8 files:  62%|██████▎   | 5/8 [00:04<00:03,  1.00s/it]Fetching 8 files: 100%|██████████| 8/8 [00:04<00:00,  1.64it/s]
+  ok -> /n/netscratch/kdbrantley_lab/Lab/adzcai/multilingual/multilingual-macaroni/test/models/curriculum-s43
+
+[curriculum seed=44] revision=curriculum-s44 -> test/models/curriculum-s44
+Fetching 8 files:   0%|          | 0/8 [00:00<?, ?it/s]Fetching 8 files:  12%|█▎        | 1/8 [00:00<00:03,  1.98it/s]Fetching 8 files:  50%|█████     | 4/8 [00:00<00:00,  5.77it/s]Fetching 8 files:  62%|██████▎   | 5/8 [00:04<00:03,  1.27s/it]Fetching 8 files: 100%|██████████| 8/8 [00:04<00:00,  1.64it/s]
+  ok -> /n/netscratch/kdbrantley_lab/Lab/adzcai/multilingual/multilingual-macaroni/test/models/curriculum-s44
+
+[curriculum_noswitch seed=42] revision=curriculum_noswitch -> test/models/curriculum_noswitch
+Fetching 8 files:   0%|          | 0/8 [00:00<?, ?it/s]Fetching 8 files:  12%|█▎        | 1/8 [00:00<00:02,  2.57it/s]Fetching 8 files:  38%|███▊      | 3/8 [00:00<00:00,  6.22it/s]Fetching 8 files:  62%|██████▎   | 5/8 [00:05<00:03,  1.28s/it]Fetching 8 files: 100%|██████████| 8/8 [00:05<00:00,  1.53it/s]
+  ok -> /n/netscratch/kdbrantley_lab/Lab/adzcai/multilingual/multilingual-macaroni/test/models/curriculum_noswitch
+
+[curriculum_noswitch seed=43] revision=curriculum_noswitch-s43 -> test/models/curriculum_noswitch-s43
+Fetching 8 files:   0%|          | 0/8 [00:00<?, ?it/s]Fetching 8 files:  12%|█▎        | 1/8 [00:00<00:01,  4.13it/s]Fetching 8 files:  25%|██▌       | 2/8 [00:00<00:01,  5.27it/s]Fetching 8 files:  62%|██████▎   | 5/8 [00:04<00:03,  1.11s/it]Fetching 8 files: 100%|██████████| 8/8 [00:04<00:00,  1.66it/s]
+  ok -> /n/netscratch/kdbrantley_lab/Lab/adzcai/multilingual/multilingual-macaroni/test/models/curriculum_noswitch-s43
+
+[curriculum_noswitch seed=44] revision=curriculum_noswitch-s44 -> test/models/curriculum_noswitch-s44
+Fetching 8 files:   0%|          | 0/8 [00:00<?, ?it/s]Fetching 8 files:  12%|█▎        | 1/8 [00:00<00:02,  2.87it/s]Fetching 8 files:  62%|██████▎   | 5/8 [00:04<00:02,  1.01it/s]Fetching 8 files: 100%|██████████| 8/8 [00:04<00:00,  1.68it/s]
+  ok -> /n/netscratch/kdbrantley_lab/Lab/adzcai/multilingual/multilingual-macaroni/test/models/curriculum_noswitch-s44
+
+DONE. downloaded 24, skipped 0. models under /n/netscratch/kdbrantley_lab/Lab/adzcai/multilingual/multilingual-macaroni/test/models

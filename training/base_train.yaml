@@ -1,0 +1,37 @@
+num_workers: 0 #24
+# set by tokenizer_train_eval_controller.py from tokenizer config --- IGNORE ---
+datasets: ""
+dataset_fraction: 0.0
+dataset_fractions: null
+stratify_by: ""
+data_seed: 0
+
+model_config: "/n/home11/llam/multilingual/training/qwen3_small_config.json"
+checkpoint_dir: ""
+init_new_model: "True"
+resume_from_checkpoint: ""
+model_seed: 42
+# set by tokenizer_train_eval_controller.py --- IGNORE ---
+model_name: ""
+output_dir: ""
+tokenizer_dir: ""
+
+save_intervals: [0.25, 0.5, 0.75, 1.0, 1.5, 2.0, 2.5, 3.0, 4.0]
+eval_strategy: "epoch"
+eval_intervals: 1.0
+
+learning_rate: 1e-04
+lr_scheduler_type: "cosine_with_min_lr"
+min_lr_rate: 0.0
+weight_decay: 0.0
+adam_beta1: 0.9
+adam_beta2: 0.999
+adam_epsilon: 1e-08
+max_grad_norm: 1.0
+warmup_ratio: 0.05
+batch_size: 64
+gradient_accumulation_steps: 1
+epochs: 10
+
+hf_usrname: ""
+push_to_hub: false

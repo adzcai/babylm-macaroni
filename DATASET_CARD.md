@@ -12,9 +12,9 @@ official BabyLM 2026 multilingual corpora (`babylm-{eng,nld,zho}`) — **no exte
 synthesized into code-switched form with an instruction-tuned LLM. Each corpus is held to the same
 **100M byte-premium-adjusted-word** budget, split equally across English, Dutch, and Chinese.
 
-Each corpus trains exactly one model condition (× 3 seeds). `switch` vs `curriculum` are the **same
+Each corpus trains exactly one model condition (× 8 seeds in the paper). `switch` vs `curriculum` are the **same
 data in a different training order** (the paper's core comparison); `word/sent/par/salad` are the
-switch-type / dose-response ablations.
+four controls.
 
 ## The 8 subsets
 | Subset | Files | Model condition | What it is |
@@ -23,8 +23,8 @@ switch-type / dose-response ablations.
 | `noswitch`   | `data.parquet` | `noswitch`   | Monolingual twin of `switch`, shuffled |
 | `word`       | `data.parquet` | `word`       | **Intrasentential (word-level)** CS only |
 | `sent`       | `data.parquet` | `sent`       | **Sentence-level** CS only |
-| `par`        | `data.parquet` | `par`        | **Parallel** (translation-adjacent) CS |
-| `salad`      | `data.parquet` | `salad`      | **Word-salad** control (shuffled tokens) |
+| `par`        | `data.parquet` | `par`        | **Document-translation** control (a translation appended to a third of documents) |
+| `salad`      | `data.parquet` | `salad`      | **Word-salad** control (random words replaced by embedded-language words) |
 | `curriculum` | `{1_intra,2_sentence,3_mono}.parquet` | `curriculum` | Same CS data as `switch`, staged as a curriculum |
 | `curriculum_noswitch` | `{1_intra,2_sentence,3_mono}.parquet` | `curriculum_noswitch` | Monolingual twin, staged |
 

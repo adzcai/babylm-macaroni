@@ -1,15 +1,12 @@
-"""Lexicon + candidate + corpus-frequency builders (ported, path-parameterized).
+"""Lexicon + corpus-frequency + exposure-set builders (ported, path-parameterized).
 
-Ports the three upstream scripts that ``align_static.py`` consumes:
+Ports two of the paper's upstream scripts:
 
   * ``build_corpus_stats``  <- align_mine_phase_intra.py
-  * ``build_candidates``    <- align_build_candidates.py
   * ``build_lexicon``       <- align_build_lexicon.py
 
-plus ``prepare_lexicon`` — a build-or-load convenience the figure scripts call to
-get ``(eval_lexicon, candidates, corpus_freq)``, caching intermediates under a
-directory (default ``<out>/align_cache``) so re-runs skip the expensive corpus
-mine.
+plus ``prepare_lexicon`` — a build-or-load convenience that caches the outputs
+under ``data/align/`` so re-runs skip the expensive corpus mine.
 
 Public-repo path mapping (vs the old hardcoded lmkiddo layout):
   * ``phase_intra`` / ``phase_intra_noswitch``  ->  the curriculum stage-1
@@ -25,7 +22,6 @@ Public-repo path mapping (vs the old hardcoded lmkiddo layout):
 ``stopwordsiso`` (imported lazily by ``align.text``).
 """
 import difflib
-import json
 from collections import Counter, defaultdict
 from pathlib import Path
 
@@ -171,67 +167,6 @@ def build_corpus_stats(data_dir, min_count=3, min_share=0.6, limit=None,
 
 
 # --------------------------------------------------------------------------- #
-# frozen per-language BLI candidate vocabularies
-# --------------------------------------------------------------------------- #
-def _load_freqs(data_dir):
-    freqs = {}
-    for lang in LANGS:
-        d = {}
-        with open(Path(data_dir) / f"freq_{lang}.tsv") as f:
-            for line in f:
-                w, c = line.rstrip("\n").split("\t")
-                d[w] = int(c)
-        freqs[lang] = d
-    return freqs
-
-
-def build_candidates(data_dir, tokenizer, n=5000, ambig_top=20000, ratio=9.0,
-                     align_dir=None):
-    """Top-N single-BPE-token, language-exclusive word types per language.
-
-    Reads ``data_dir/freq_{lang}.tsv``; returns ``{lang: DataFrame(word,
-    token_id, freq)}``. The SAME frozen lists are used for every model. If
-    ``align_dir`` is given, also writes ``bli_candidates_{lang}.jsonl`` there.
-    """
-    freqs = _load_freqs(data_dir)
-    topsets = {
-        lang: set(sorted(freqs[lang], key=freqs[lang].get, reverse=True)[:ambig_top])
-        for lang in LANGS
-    }
-    out = {}
-    for lang in LANGS:
-        others = [o for o in LANGS if o != lang]
-        picked = []
-        for w in sorted(freqs[lang], key=freqs[lang].get, reverse=True):
-            if len(picked) >= n:
-                break
-            if not any(c.isalpha() for c in w):
-                continue
-            f = freqs[lang][w]
-            ambiguous = False
-            for o in others:
-                fo = freqs[o].get(w, 0)
-                if w in topsets[o] and f < ratio * max(fo, 1):
-                    ambiguous = True
-                    break
-            if ambiguous:
-                continue
-            ids = _word_token_ids(tokenizer, w, lang)
-            if len(ids) != 1:
-                continue
-            picked.append((w, ids[0], f))
-        out[lang] = pd.DataFrame(picked, columns=["word", "token_id", "freq"])
-        if align_dir is not None:
-            align_dir = Path(align_dir)
-            align_dir.mkdir(parents=True, exist_ok=True)
-            with open(align_dir / f"bli_candidates_{lang}.jsonl", "w") as fh:
-                for w, tid, fr in picked:
-                    fh.write(json.dumps({"word": w, "token_id": int(tid), "freq": int(fr)},
-                                        ensure_ascii=False) + "\n")
-    return out
-
-
-# --------------------------------------------------------------------------- #
 # unified, tiered evaluation lexicon (attested + MUSE)
 # --------------------------------------------------------------------------- #
 def _tri_jaccard(a, b):
@@ -342,29 +277,27 @@ def build_lexicon(data_dir, tokenizer, corpus_stats=None, muse_dir=None,
 
 
 # --------------------------------------------------------------------------- #
-# build-or-load convenience for the figure scripts
+# build-or-load convenience for measure_wordlevel.py
 # --------------------------------------------------------------------------- #
-def _load_candidates(align_dir):
-    return {lang: pd.read_json(Path(align_dir) / f"bli_candidates_{lang}.jsonl", lines=True)
-            for lang in LANGS}
+def prepare_lexicon(data_dir, tokenizer, align_dir=None, rebuild=False, **mine_kw):
+    """Return ``(eval_lexicon, exposure_sets)``, building them under ``align_dir``
+    (default ``data_dir/align``) on first use and loading them thereafter.
 
-
-def prepare_lexicon(data_dir, tokenizer, cache_dir, rebuild=False, **mine_kw):
-    """Return ``(eval_lexicon, candidates, corpus_freq)``, building + caching
-    them under ``cache_dir`` on first use and loading the cache thereafter.
-
-    Set ``rebuild=True`` to force a rebuild. Extra keyword args go to
-    ``build_corpus_stats`` (e.g. ``min_count``, ``limit``).
+    Extra keyword args go to ``build_corpus_stats`` (``min_count``, ``limit``).
     """
-    cache = Path(cache_dir)
-    lex_p = cache / "eval_lexicon.parquet"
-    cf_p = cache / "corpus_freq.parquet"
-    have_cands = all((cache / f"bli_candidates_{l}.jsonl").is_file() for l in LANGS)
-    if not rebuild and lex_p.is_file() and cf_p.is_file() and have_cands:
-        return (pd.read_parquet(lex_p), _load_candidates(cache), pd.read_parquet(cf_p))
-
-    cache.mkdir(parents=True, exist_ok=True)
-    stats = build_corpus_stats(data_dir, align_dir=cache, **mine_kw)
-    cands = build_candidates(data_dir, tokenizer, align_dir=cache)
-    lex = build_lexicon(data_dir, tokenizer, corpus_stats=stats, align_dir=cache)
-    return lex, cands, stats["corpus_freq"]
+    align_dir = Path(align_dir) if align_dir is not None else Path(data_dir) / "align"
+    lex_p, exp_p = align_dir / "eval_lexicon.parquet", align_dir / "exposure_sets.parquet"
+    if not rebuild and lex_p.is_file() and exp_p.is_file():
+        return pd.read_parquet(lex_p), pd.read_parquet(exp_p)
+    mined = {k: align_dir / f"{k}.parquet" for k in ("attested_lexicon", "corpus_freq", "exposure_sets")}
+    if not rebuild and all(p.is_file() for p in mined.values()):
+        print(f"[lexicon] reusing mined corpus stats under {align_dir}", flush=True)
+        stats = {"attested": pd.read_parquet(mined["attested_lexicon"]),
+                 "corpus_freq": pd.read_parquet(mined["corpus_freq"]),
+                 "exposure": pd.read_parquet(mined["exposure_sets"])}
+    else:
+        print(f"[lexicon] mining the stage-1 corpora under {data_dir} -> {align_dir}", flush=True)
+        stats = build_corpus_stats(data_dir, align_dir=align_dir, **mine_kw)
+    print(f"[lexicon] building the evaluation lexicon (attested + MUSE) -> {align_dir}", flush=True)
+    lex = build_lexicon(data_dir, tokenizer, corpus_stats=stats, align_dir=align_dir)
+    return lex, stats["exposure"]

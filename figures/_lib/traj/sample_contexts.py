@@ -1,60 +1,30 @@
 """Sample the frozen measurement context set (ports traj_sample_contexts.py).
 
 For every word in the matched pairs (E, C, and BOTH translation equivalents),
-sample K monolingual sentences from that word's OWN language, recording exact
-char offsets. The set is persisted once and sha256'd so every checkpoint measures
-the byte-identical set.
+sample K monolingual sentences from that word's OWN language's BabyLM corpus,
+recording exact char offsets. The set is persisted once and sha256'd so every
+checkpoint measures the byte-identical set.
 
-CORPUS REPOINT. The paper read raw BabyLM ``*.arrow`` shards from a hard-coded HF
-cache. Here we stream the monolingual ``text`` column from the downloaded corpus
-instead: the ``noswitch`` / ``curriculum_noswitch`` subsets ARE the monolingual
-twin (no code-switching), filtered by their ``language`` column. Prefers
-``data/noswitch/data.parquet`` (single file, all 3 languages), falling back to the
-staged ``data/curriculum_noswitch/{1_intra,2_sentence,3_mono}.parquet``.
-
-CAVEAT (documented, not fixed): these are training sentences the models saw. The
-E-vs-C contrast is matched so exposure is symmetric; the cs-vs-noswitch DiD nets
-out the rest. Because the corpus source differs from the paper's arrow shards, the
-sampled set (and its hash) will differ from the paper's — the pipeline is
-internally consistent, not byte-identical to the private run.
+Text comes from the monolingual BabyBabelLM corpora under ``cfg['babylm_dir']``
+(``download_aux.py --babylm``), as in the paper. Because document order and
+sampling are deterministic, re-running gives the same set for the same corpus
+files; the sampled set will differ from the paper's private run only if the
+matched pairs differ.
 """
 from __future__ import annotations
 
 import json
 import re
 from collections import defaultdict
-from pathlib import Path
 
 import pandas as pd
 
 from . import config as _cfg
+from ..babylm import babylm_texts
 from .text import to_simplified, tokenize as mixed_tokenize
 
 _SENT = {"zho": re.compile(r"[^。！？\n]+[。！？]?"),
          "lat": re.compile(r"[^.!?\n]+[.!?]?")}
-
-
-def _mono_parquets(cfg):
-    """Ordered list of monolingual corpus parquets to stream text from."""
-    single = cfg["data_dir"] / "noswitch" / "data.parquet"
-    if single.is_file():
-        return [single]
-    staged = [_cfg.phase_parquet(cfg, "curriculum_noswitch", s)
-              for s in ("stage1", "stage2", "stage3")]
-    staged = [p for p in staged if p.is_file()]
-    if not staged:
-        raise FileNotFoundError(
-            "no monolingual corpus found. Download it first: "
-            "python download_data.py --only noswitch curriculum_noswitch")
-    return staged
-
-
-def _mono_texts(cfg, lang):
-    """Yield monolingual ``text`` strings for ``lang`` from the corpus parquets."""
-    for p in _mono_parquets(cfg):
-        df = pd.read_parquet(p, columns=["text", "language"])
-        for t in df.loc[df.language == lang, "text"]:
-            yield t
 
 
 def _sample_lang(cfg, pairs, lang):
@@ -73,7 +43,7 @@ def _sample_lang(cfg, pairs, lang):
     print(f"[contexts] lang={lang} words={len(words)} K={K}", flush=True)
 
     sp = _SENT["zho"] if lang == "zho" else _SENT["lat"]
-    for text in _mono_texts(cfg, lang):
+    for text in babylm_texts(cfg["babylm_dir"], lang):
         if n_active == 0:
             break
         norm = to_simplified(text) if lang == "zho" else text

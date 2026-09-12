@@ -1,11 +1,22 @@
 # Downloaded / trained artifacts and regenerable intermediates — never committed.
-models/
-data/
-out/
+/models/
+/data/
+/out/
 
-# Cloned + pinned external repos (fetched by setup.sh).
-multilingual-training/
+# The evaluator cloned + pinned by setup.sh.
 babylm-eval/
+
+# The end-to-end trial run (test/): keep the logs, report and figures, not the
+# downloaded / trained / extracted artifacts.
+test/data/
+test/models/
+test/out/wordlevel/
+test/out/eval/
+test/out/emb_cache/
+test/out/wordlevel/
+test/models_smoke/
+test/models_traj/
+test/hf-cache/
 
 # Environments & weights.
 .venv/
@@ -20,3 +31,6 @@ __pycache__/
 *.py[cod]
 .ipynb_checkpoints/
 .DS_Store
+
+# Offline W&B runs written by the trainer.
+wandb/

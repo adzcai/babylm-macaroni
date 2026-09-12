@@ -1,0 +1,4 @@
+NVIDIA H200, 143771 MiB
+python: /n/netscratch/kdbrantley_lab/Lab/adzcai/multilingual/multilingual-macaroni/.venv/bin/python  Python 3.12.14
+[lexicon] mining the stage-1 corpora under /n/netscratch/kdbrantley_lab/Lab/adzcai/multilingual/multilingual-macaroni/test/data -> /n/netscratch/kdbrantley_lab/Lab/adzcai/multilingual/multilingual-macaroni/test/data/align
+/var/slurmd/spool/slurmd/job46135572/slurm_script: line 10: 1518591 Bus error               (core dumped) python figures/measure_wordlevel.py --seeds 42 43 44 --models-dir test/models --data-dir test/data --results-dir test/out/results --out test/out

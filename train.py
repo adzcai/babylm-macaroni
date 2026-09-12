@@ -5,8 +5,8 @@ Usage:
     python train.py --corpus switch [--seed 42] [--config configs/train.yaml]
     python train.py --corpus curriculum --seed 43
 
-This is a thin wrapper around the external trainer cloned by setup.sh into
-`multilingual-training/train.py`. It fills the per-condition fields of
+This is a thin wrapper around the BabyLM baseline trainer vendored in
+`training/train.py` (see training/NOTICE.md). It fills the per-condition fields of
 `configs/train.yaml` (data path, output dir, seeds, tokenizer, and, for the
 curriculum conditions, the per-stage checkpoint_dir / init_new_model) and shells
 out to the trainer once per run. It does NOT re-implement the HF Trainer.
@@ -19,6 +19,15 @@ Conditions:
                      data/<corpus>/{1_intra,2_sentence,3_mono}.parquet
                      (stage 1 inits a fresh model; stages 2-3 continue from the
                      previous stage's final checkpoint).
+
+Checkpoints: every run saves its initialisation as checkpoint-0 and the epoch
+5 and 10 checkpoints; curriculum stages additionally save epoch 1. That is
+exactly the set the trajectory figure (Fig 3) reads from
+models/<condition>[-sNN]/stage{1,2,3}/, so training the two curriculum arms
+locally is all that is needed to reproduce it.
+
+Smoke test (a few minutes on one GPU, NOT the paper recipe):
+    python train.py --corpus curriculum --epochs 1 --dataset-fraction 0.002
 """
 import argparse
 import copy
@@ -52,52 +61,57 @@ def condition_label(corpus: str, seed: int) -> str:
     return corpus if seed == 42 else f"{corpus}-s{seed}"
 
 
+HUB_MODELS_REPO = "drooryck/multilingual-macaroni-models"
+TOKENIZER_FILES = ["tokenizer.json", "tokenizer_config.json", "special_tokens_map.json"]
+
+
 def resolve_tokenizer_dir(tokenizer: str | None, models_dir: Path) -> Path:
     """Resolve a local tokenizer directory containing tokenizer.json.
 
-    The external trainer requires a LOCAL tokenizer dir (it checks for
-    tokenizer.json). Resolution order:
-      1. --tokenizer points at a local dir with tokenizer.json -> use it.
-      2. --tokenizer looks like an HF id (or a path without tokenizer.json)
-         -> materialize it locally under <models_dir>/_tokenizer/.
-      3. --tokenizer omitted -> reuse the tokenizer shipped inside any already
-         downloaded model under <models_dir>/*/ (first dir with tokenizer.json).
+    Every condition shares one byte-level BPE tokenizer (vocab 16,384). Order:
+      1. --tokenizer is a local dir with tokenizer.json -> use it.
+      2. --tokenizer is an HF model id -> download its tokenizer to <models_dir>/_tokenizer/.
+      3. --tokenizer omitted -> reuse the tokenizer inside any model already under
+         <models_dir>/ (downloaded or trained), else fetch the paper's tokenizer from
+         the `curriculum` branch of the Hub model repo into <models_dir>/_tokenizer/.
     """
+    staged = (models_dir / "_tokenizer").resolve()
     if tokenizer:
         p = Path(tokenizer)
         if (p / "tokenizer.json").is_file():
             return p.resolve()
         if p.is_dir():
-            raise SystemExit(
-                f"--tokenizer '{tokenizer}' is a directory but has no tokenizer.json."
-            )
-        # Treat as an HF id (or remote path) and materialize it locally so the
-        # trainer's local-dir requirement is satisfied.
-        # NOTE: requires network + `transformers`; only triggered for an HF id.
-        staged = (models_dir / "_tokenizer").resolve()
+            raise SystemExit(f"--tokenizer '{tokenizer}' is a directory but has no tokenizer.json.")
         print(f"[tokenizer] downloading '{tokenizer}' -> {staged}")
         from transformers import AutoTokenizer  # lazy import
-        tok = AutoTokenizer.from_pretrained(tokenizer)
-        tok.save_pretrained(str(staged))
+        AutoTokenizer.from_pretrained(tokenizer).save_pretrained(str(staged))
         return staged
 
-    # No tokenizer given: reuse one from a downloaded model.
+    if (staged / "tokenizer.json").is_file():
+        return staged
     if models_dir.is_dir():
         for cand in sorted(models_dir.iterdir()):
             if cand.is_dir() and (cand / "tokenizer.json").is_file():
                 print(f"[tokenizer] reusing tokenizer from {cand}")
                 return cand.resolve()
-    raise SystemExit(
-        "No tokenizer found. Pass --tokenizer <path-or-hfid>, or download a model "
-        "first (e.g. `python download_models.py --only switch`) so its bundled "
-        "tokenizer can be reused."
-    )
+            for sub in sorted(cand.glob("stage1/checkpoint-*")) + sorted(cand.glob("checkpoint-*")):
+                if (sub / "tokenizer.json").is_file():
+                    print(f"[tokenizer] reusing tokenizer from {sub}")
+                    return sub.resolve()
+
+    print(f"[tokenizer] fetching the paper's tokenizer from {HUB_MODELS_REPO} -> {staged}")
+    from huggingface_hub import hf_hub_download  # lazy import
+    staged.mkdir(parents=True, exist_ok=True)
+    for f in TOKENIZER_FILES:
+        hf_hub_download(HUB_MODELS_REPO, f, revision="curriculum", local_dir=str(staged),
+                        token=os.environ.get("HF_TOKEN"))
+    return staged
 
 
 def stage_dataset_dir(parquet_paths: list[Path], stage_dir: Path) -> Path:
     """Symlink the given parquet file(s) into a clean directory and return it.
 
-    The trainer's data loader (multilingual-training/data.py) treats a single
+    The trainer's data loader (training/data.py) treats a single
     local FILE path as a plain-text file; only a DIRECTORY of parquets is loaded
     as parquet. We therefore always hand it an isolated directory containing
     exactly the parquet(s) we want for this run/stage.
@@ -128,8 +142,7 @@ def run_trainer(trainer_dir: Path, cfg: dict, cfg_path: Path) -> None:
     if not trainer_py.is_file():
         raise SystemExit(
             f"Trainer not found at {trainer_py}.\n"
-            f"Run `bash setup.sh` to clone the external trainer into "
-            f"'{trainer_dir}'."
+            f"Expected the vendored trainer at '{trainer_dir}' (see training/NOTICE.md)."
         )
     cfg_path.parent.mkdir(parents=True, exist_ok=True)
     cfg_path.write_text(yaml.safe_dump(cfg, sort_keys=False))
@@ -225,16 +238,24 @@ def main():
     ap.add_argument("--models-dir", default="models",
                     help="root to write trained models into")
     ap.add_argument("--tokenizer", default=None,
-                    help="tokenizer dir or HF id (default: reuse the tokenizer "
-                         "inside any downloaded model under --models-dir)")
-    ap.add_argument("--trainer-dir", default="multilingual-training",
-                    help="cloned external trainer repo (see setup.sh)")
+                    help="tokenizer dir or HF id (default: reuse the tokenizer of any model "
+                         "under --models-dir, else fetch the paper's from the Hub)")
+    ap.add_argument("--trainer-dir", default=str(REPO_ROOT / "training"),
+                    help="directory holding the vendored trainer (training/train.py)")
+    ap.add_argument("--epochs", type=int, default=None,
+                    help="override epochs per run/stage (paper: 10)")
+    ap.add_argument("--dataset-fraction", type=float, default=None,
+                    help="override the token fraction of each corpus used (paper: 1.0)")
     args = ap.parse_args()
 
     config_path = Path(args.config)
     if not config_path.is_file():
         raise SystemExit(f"Config not found: {config_path}")
     base_cfg = load_base_config(config_path)
+    if args.epochs is not None:
+        base_cfg["epochs"] = args.epochs
+    if args.dataset_fraction is not None:
+        base_cfg["dataset_fraction"] = args.dataset_fraction
 
     models_dir = Path(args.models_dir)
     label = condition_label(args.corpus, args.seed)

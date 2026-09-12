@@ -1,0 +1,55 @@
+% Figure 1, part B — corpus composition (horizontal, time -> right).
+% Rows = languages (shared chips at left); each CS bar reads left-to-right in
+% curriculum training order: word-level CS | sentence-level CS | non-CS.
+% Body only: the figure environment, part header, caption and label are in
+% main.tex. Requires (main.tex preamble): colors langEN/langNL/langZH,
+% intracol/sentcol/monocol, styles langchip/wordfill/sentfill/monofill,
+% the \figonelegend savebox, tikz libs calc + arrows.meta.
+\tikzset{seg/.style={draw=black!45, line width=0.4pt, rounded corners=1.8pt},
+         divider/.style={draw=black!40, line width=0.4pt},
+         ctitle/.style={font=\scriptsize\bfseries, text=black!75},
+         leg/.style={font=\tiny, text=black!80, anchor=west, inner sep=1pt}}
+% Legend, typeset on its own so its total width is known; it is then dropped
+% as a single node centred on the panel below (see the last \node).
+\sbox{\figonelegend}{%
+  \begin{tikzpicture}[x=1cm,y=1cm]
+    \draw[seg, wordfill] (0,-0.11) rectangle (0.24,0.11);
+    \node[leg] (l1) at (0.34,0) {word-level CS};
+    \draw[seg, sentfill] ($(l1.east)+(0.36,-0.11)$) rectangle ($(l1.east)+(0.60,0.11)$);
+    \node[leg] (l2) at ($(l1.east)+(0.70,0)$) {sentence-level CS};
+    \draw[seg, monofill] ($(l2.east)+(0.36,-0.11)$) rectangle ($(l2.east)+(0.60,0.11)$);
+    \node[leg] (l3) at ($(l2.east)+(0.70,0)$) {non-CS};
+  \end{tikzpicture}%
+}
+\begin{tikzpicture}[x=1cm,y=1cm]
+  \def\bh{0.30}   % row height
+  \def\rs{0.46}   % row pitch
+  \def\uw{1.95}   % non-CS bar width
+  \def\cx{2.65}   % CS panel x-offset
+  \def\cw{1.95}   % CS bar width
+  % shared language row chips
+  \node[langchip={langEN}{}] at (-0.45,{2*\rs+\bh/2}) {en};
+  \node[langchip={langNL}{}] at (-0.45,{1*\rs+\bh/2}) {nl};
+  \node[langchip={langZH}{}] at (-0.45,{0*\rs+\bh/2}) {zh};
+  % --- Non-CS corpus: all grey ---
+  \foreach \i in {0,1,2} { \draw[seg, monofill] (0,\i*\rs) rectangle (\uw,\i*\rs+\bh); }
+  \node[ctitle] at (\uw/2,{2*\rs+\bh+0.30}) {Non-CS corpus};
+  % --- CS corpus: word | sentence | non-CS, left to right ---
+  \foreach \i in {0,1,2} {
+    \begin{scope}
+      \clip[rounded corners=1.8pt] (\cx,\i*\rs) rectangle (\cx+\cw,\i*\rs+\bh);
+      \fill[wordfill] (\cx,\i*\rs)            rectangle (\cx+\cw/3,\i*\rs+\bh);
+      \fill[sentfill] (\cx+\cw/3,\i*\rs)      rectangle (\cx+2*\cw/3,\i*\rs+\bh);
+      \fill[monofill] (\cx+2*\cw/3,\i*\rs)    rectangle (\cx+\cw,\i*\rs+\bh);
+    \end{scope}
+    \draw[divider] (\cx+\cw/3,\i*\rs)   -- (\cx+\cw/3,\i*\rs+\bh);
+    \draw[divider] (\cx+2*\cw/3,\i*\rs) -- (\cx+2*\cw/3,\i*\rs+\bh);
+    \draw[seg, fill=none] (\cx,\i*\rs) rectangle (\cx+\cw,\i*\rs+\bh);
+  }
+  \node[ctitle] at (\cx+\cw/2,{2*\rs+\bh+0.30}) {CS corpus};
+  % curriculum reading direction: the three segments of each CS bar are the three training stages
+  \draw[-{Stealth[length=3pt,width=2.5pt]}, black!55, line width=0.4pt] (\cx,-0.17) -- (\cx+\cw,-0.17)
+    node[midway, below=-0.5pt, font=\tiny, text=black!70] {curriculum training order};
+  % legend, centred over everything drawn so far
+  \node[anchor=south, inner sep=0pt] at ($(current bounding box.north)+(0,0.10)$) {\usebox{\figonelegend}};
+\end{tikzpicture}

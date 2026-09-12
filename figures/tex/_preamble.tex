@@ -1,0 +1,77 @@
+% Shared preamble for the two hand-drawn paper figures (Fig 1, Fig 5), copied
+% from the paper's main.tex so the standalone PDFs match the in-paper rendering.
+% Build with xelatex (fontspec + a Han-capable font); see build.sh.
+\usepackage{fontspec}
+\IfFileExists{TeXGyreTermesX-Regular.otf}
+  {\setmainfont{TeXGyreTermesX}}
+  {\setmainfont{texgyretermes}[
+     Extension      = .otf,
+     UprightFont    = *-regular,
+     BoldFont       = *-bold,
+     ItalicFont     = *-italic,
+     BoldItalicFont = *-bolditalic,
+   ]}
+\IfFontExistsTF{Droid Sans Fallback}
+  {\newfontfamily\cjkfont{Droid Sans Fallback}}
+  {\IfFontExistsTF{Noto Sans CJK SC}
+    {\newfontfamily\cjkfont{Noto Sans CJK SC}}
+    {\newcommand{\cjkfont}{}}}
+\newcommand{\zh}[1]{{\cjkfont #1}}
+\XeTeXlinebreaklocale "zh"
+\XeTeXlinebreakskip = 0pt plus 0.1pt
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{tikz}
+\usetikzlibrary{positioning, fit, backgrounds, calc, arrows.meta}
+\usepackage{colortbl}
+
+% Corpus-type colours (word-level CS teal / sentence-level CS violet / non-CS grey)
+% and language colours (English blue / Dutch orange / Chinese red). Mirrored by
+% CORPUS_C and LANG in figures/common.py.
+\definecolor{intracol}{RGB}{15,109,100}
+\definecolor{sentcol}{RGB}{91,63,160}
+\definecolor{monocol}{RGB}{154,165,173}
+\definecolor{langEN}{RGB}{42,111,214}
+\definecolor{langNL}{RGB}{232,133,12}
+\definecolor{langZH}{RGB}{209,52,47}
+\newcommand{\embEN}[1]{\textcolor{langEN}{#1}}
+\newcommand{\embNL}[1]{\textcolor{langNL}{#1}}
+\newcommand{\embZH}[1]{\textcolor{langZH}{#1}}
+\newcommand{\dtag}[1]{{\scriptsize\textsf{\textcolor{black!55}{#1}}}}
+
+\tikzset{
+  wordfill/.style={fill=intracol!80},
+  sentfill/.style={fill=sentcol!80},
+  monofill/.style={fill=monocol!35},
+  langchip/.style 2 args={draw=#1!70, fill=#1!12, text=#1, rounded corners=2.5pt,
+    inner xsep=5pt, inner ysep=2.5pt, text height=1.55ex, text depth=.35ex,
+    minimum width=2.3em, align=center, font=\footnotesize\bfseries},
+}
+\newcommand{\panelhdr}[2]{%
+  \begin{tikzpicture}[x=1cm,y=1cm]
+    \node[fill=black!8, draw=black!25, line width=0.4pt, text=black!82,
+          rounded corners=2.5pt, inner xsep=5pt, inner ysep=2pt,
+          font=\footnotesize\bfseries, anchor=west] (b) at (0,0) {#1};
+    \node[anchor=west, font=\footnotesize\bfseries, text=black!70]
+          at ($(b.east)+(0.16,0)$) {#2};
+  \end{tikzpicture}%
+}
+\newsavebox{\figonelegend}
+
+% Crop the page to the content (a `standalone`-class substitute that needs no
+% extra packages): typeset the figure into a box, then size the page to it.
+\newlength{\figborder}\setlength{\figborder}{3pt}
+\newsavebox{\figbox}
+\pagestyle{empty}
+\parindent=0pt
+\newcommand{\shipfigure}{%
+  \pdfpagewidth=\dimexpr\wd\figbox+2\figborder\relax
+  \pdfpageheight=\dimexpr\ht\figbox+\dp\figbox+2\figborder\relax
+  \hoffset=-1in \voffset=-1in
+  \oddsidemargin=\figborder \evensidemargin=\figborder \topmargin=\figborder
+  \headheight=0pt \headsep=0pt \topskip=0pt \footskip=0pt
+  \textwidth=\wd\figbox \textheight=\dimexpr\ht\figbox+\dp\figbox\relax
+  \noindent\usebox{\figbox}\par}

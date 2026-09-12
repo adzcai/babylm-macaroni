@@ -1,9 +1,10 @@
-"""Ported, path-parameterized measurement modules for the figure pipeline.
+"""Measurement code behind the paper's figures (models -> CSV), path-parameterized.
 
-Each ``figNN_*.py`` script (in the parent ``figures/`` directory) imports the
-compute half of its figure from here, runs it over ``models/`` + ``data/`` to
-produce an intermediate CSV under ``out/figures/``, then plots it. These modules
-are adapted from the paper's analysis code with all hardcoded ``/n/...`` paths
-replaced by the ``models_dir`` / ``data_dir`` / ``out`` roots resolved in
-``figures/common.py``.
+  represent_align   FLORES+ bitext retrieval per layer (Figs 2, 3, 6, 7)
+  align/            lexicon + exposure-set mining from the training corpora
+  traj/             word-level pipeline: matched pairs, contexts, reps, Fig 4 / Fig 8 measures
+  babylm            monolingual BabyLM corpus reader + frequency tables
+
+``measure_retrieval.py`` and ``measure_wordlevel.py`` (in ``figures/``) are the
+entry points; the ``figN_*.py`` scripts only read the resulting CSVs.
 """

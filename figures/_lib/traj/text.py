@@ -6,7 +6,7 @@ through jieba and everything else through a Unicode-aware word regex, so Dutch
 diacritics and English apostrophes survive.
 
 Requires ``opencc`` and ``jieba`` (NOT in the base requirements.txt — install
-them for the Fig-7 pipeline: ``pip install opencc-python-reimplemented jieba``).
+them for the word-level pipeline: ``pip install opencc-python-reimplemented jieba``).
 """
 import re
 import unicodedata

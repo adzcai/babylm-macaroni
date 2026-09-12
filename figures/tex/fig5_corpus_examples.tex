@@ -1,0 +1,33 @@
+% Paper Figure 5 (fig:composition): verbatim corpus examples by matrix language
+% (rows) x switch type (columns); a hand-written table, not a data figure.
+% Build: bash build.sh  ->  fig5_corpus_examples.pdf
+\documentclass[10pt]{article}
+\input{_preamble}
+\begin{document}
+\sbox{\figbox}{%
+\small
+\setlength{\tabcolsep}{6pt}\renewcommand{\arraystretch}{1.25}
+\begin{tabular}{@{}l >{\raggedright\arraybackslash}p{4.55cm} >{\raggedright\arraybackslash}p{4.55cm} >{\raggedright\arraybackslash}p{4.55cm}@{}}
+\toprule
+ & \textbf{\textcolor{intracol}{Word-level CS}}
+ & \textbf{\textcolor{sentcol}{Sentence-level CS}}
+ & \textbf{\textcolor{monocol}{Non-CS}} \\
+\midrule
+\textcolor{langEN}{\textbf{English}}
+ & \dtag{EN\,$\leftarrow$\,NL}\newline Rondo is a \embNL{dorp} \embNL{in de VS staat} Arkansas.
+ & \dtag{EN\,$\leftrightarrow$\,ZH}\newline Landaff is a district in Wales.\ \embZH{\zh{它是英国作家罗尔德·达尔的出生地。}}
+ & Rondo is a town in the US state of Arkansas. \\
+\addlinespace[5pt]
+\textcolor{langNL}{\textbf{Dutch}}
+ & \dtag{NL\,$\leftarrow$\,ZH}\newline `Ga \embZH{\zh{走}}, voordat het te laat \embZH{\zh{太晚}} is!' snauwde opa \embZH{\zh{爷爷}}.
+ & \dtag{NL\,$\leftrightarrow$\,EN}\newline Iemand voor schut zetten. \embEN{To put someone to shame is to insult someone.}
+ & `Ga, voordat het te laat is!' snauwde opa. \\
+\addlinespace[5pt]
+\textcolor{langZH}{\textbf{Chinese}}
+ & \dtag{ZH\,$\leftarrow$\,EN}\newline \zh{但是我不会}\,\embEN{swim}\,\zh{呀,你那}\,\embEN{swimming posture}\,\zh{也分解不对呀。}
+ & \dtag{ZH\,$\leftrightarrow$\,NL}\newline \zh{我知道了。} \embNL{Dan moeten we morgen zeker ijs eten.}
+ & \zh{但是我不会游泳呀,你那游泳姿势也分解不对呀。} \\
+\bottomrule
+\end{tabular}}
+\shipfigure
+\end{document}

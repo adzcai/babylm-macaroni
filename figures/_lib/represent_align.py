@@ -1,43 +1,19 @@
-"""Cross-lingual representation-alignment compute (paper RQ2 / Figs 2, 3, 5).
+"""Sentence-level cross-lingual alignment: FLORES+ bitext retrieval (Figs 2, 3, 6, 7).
 
-Ported from the paper's ``scripts/analysis/represent_align.py``. Inference only
-(no training). For each model checkpoint it mean-pools per-layer hidden states on
-a held-out parallel probe set (FLORES+ dev, eng/nld/zho, 997 aligned sentences the
-models never saw as pairs) and computes, per layer and language pair:
+Port of the paper's ``scripts/analysis/represent_align.py`` (the single scoring
+site for every retrieval number in the paper). Inference only. For each model
+it mean-pools per-layer hidden states on the FLORES+ dev set (eng/nld/zho, 997
+sentences aligned by id, held out) and computes per layer and language pair:
 
-  - retrieval_p1  : bitext retrieval P@1 (nearest-neighbour translation, avg of
-                    both directions) -- the headline metric for Figs 2/3/5;
-  - cos_gap       : mean cos(parallel pair) - mean cos(random cross-lingual pair);
-  - cka           : linear CKA between the two languages' representation matrices;
-  - centroid_dist : || mean(E_L1) - mean(E_L2) ||  on L2-normalised embeddings.
+  retrieval_p1     bitext retrieval P@1 under CSLS (k=10) ranking, both directions averaged  [headline]
+  retrieval_p1_nn  the same under plain cosine nearest neighbour (hubness check)
+  median_pct_rank, mean_pct_rank, mrr, retrieval_p5, median_rank   rank companions (CSLS)
+  cos_gap, cka, centroid_dist                                       corroborating measures
 
-FLORES+ TOKEN REQUIREMENT
--------------------------
-The probe set is loaded from the HuggingFace Hub dataset
-``openlanguagedata/flores_plus``, which is GATED: you must (a) accept its terms on
-the Hub with your account, and (b) expose a token so ``datasets`` can authenticate.
-Set ``HF_TOKEN`` in the environment (or run ``huggingface-cli login``) before
-calling ``retrieval_per_layer``. To run fully offline against a pre-downloaded
-cache, set ``HF_DATASETS_OFFLINE=1`` (and ``HF_HOME`` to the cache root), or pass a
-pre-loaded probe set via the ``flores_cache`` argument (see below) so no network
-access is attempted at all.
-
-PUBLIC API
-----------
-``retrieval_per_layer(model_labels, device="cuda", flores_cache=None, ...)`` ->
-``pandas.DataFrame`` with columns
-``model, group, seed, layer, pair, retrieval_p1, cos_gap, cka, centroid_dist``.
-
-  * ``model_labels`` : ``dict[str, str | Path]`` mapping a label -> a model dir /
-    HF id. The label encodes the condition (and optionally seed / trajectory
-    milestone); ``group`` (arm), ``seed`` are inferred from it.
-  * ``group``        : the ordering ARM inferred from the label -- ``"curriculum"``
-    for curriculum / curriculum_noswitch (labels containing ``curriculum`` or
-    ``cur_``), else ``"random"`` (switch / noswitch).
-  * ``pair``         : formatted like ``"eng-nld"``.
-  * ``flores_cache`` : optional pre-loaded probe set as a ``(texts, n)`` tuple
-    (``texts`` = ``{lang: [sentences]}``); if ``None`` the probe is loaded from the
-    Hub once. Passing it lets several figures share one download.
+FLORES+ (``openlanguagedata/flores_plus``) is a GATED Hub dataset: accept its terms
+and set ``HF_TOKEN`` (or ``huggingface-cli login``) before the first run. Pooled
+hidden states can be cached per model label (``emb_cache``) so re-scoring is
+CPU-only.
 """
 from __future__ import annotations
 
@@ -47,26 +23,19 @@ from pathlib import Path
 import numpy as np
 import torch
 
-# figures/ is sys.path[0] when a figNN_*.py runs, so plain `import common` works.
 import common
 
 PAIRS = [("eng", "nld"), ("eng", "zho"), ("nld", "zho")]
-# FLORES+ (openlanguagedata/flores_plus) config per language; Chinese Simplified = cmn_Hans.
 FLORES_PLUS_CFG = {"eng": "eng_Latn", "nld": "nld_Latn", "zho": "cmn_Hans"}
+CSLS_K = 10
+FIELDS = ["model", "group", "seed", "layer", "pair",
+          "retrieval_p1", "retrieval_p1_nn", "cos_gap", "cka", "centroid_dist",
+          "median_pct_rank", "mean_pct_rank", "mrr", "retrieval_p5", "median_rank"]
 
 
-# --------------------------------------------------------------------------- #
-# Probe set
-# --------------------------------------------------------------------------- #
 def load_flores_plus(n=997, split="dev"):
-    """Load FLORES+ ``split`` for eng/nld/zho, aligned by sentence id (intersection).
-
-    Requires HF auth for the gated ``openlanguagedata/flores_plus`` dataset -- see
-    the module docstring. Returns ``(texts, n_aligned)`` where ``texts`` maps each
-    language code to a list of ``n_aligned`` parallel sentences.
-    """
+    """FLORES+ ``split`` for eng/nld/zho, aligned by sentence id -> (texts, n)."""
     from datasets import load_dataset
-
     per = {}
     for lang, cfg in FLORES_PLUS_CFG.items():
         d = load_dataset("openlanguagedata/flores_plus", cfg, split=split)
@@ -77,25 +46,21 @@ def load_flores_plus(n=997, split="dev"):
     return {lang: [per[lang][i] for i in ids] for lang in per}, len(ids)
 
 
-# --------------------------------------------------------------------------- #
-# Embedding + metrics
-# --------------------------------------------------------------------------- #
 @torch.no_grad()
 def embed(model, tok, sents, device, batch=32):
-    """Return ``[n_layers+1, N, hid]`` mean-pooled hidden states."""
+    """Return ``[n_layers+1, N, hid]`` attention-masked mean-pooled hidden states."""
     per_layer = None
     for i in range(0, len(sents), batch):
         chunk = sents[i:i + batch]
         enc = tok(chunk, return_tensors="pt", padding=True, truncation=True,
                   max_length=128).to(device)
         out = model(**enc, output_hidden_states=True)
-        mask = enc["attention_mask"].unsqueeze(-1).float()        # [B, seq, 1]
+        mask = enc["attention_mask"].unsqueeze(-1).float()
         denom = mask.sum(1).clamp(min=1)
-        hs = out.hidden_states                                    # tuple len L+1, each [B, seq, hid]
-        pooled = [(h * mask).sum(1) / denom for h in hs]          # each [B, hid]
-        pooled = torch.stack(pooled, 0).float().cpu().numpy()     # [L+1, B, hid]
+        pooled = [(h * mask).sum(1) / denom for h in out.hidden_states]
+        pooled = torch.stack(pooled, 0).float().cpu().numpy()
         per_layer = pooled if per_layer is None else np.concatenate([per_layer, pooled], axis=1)
-    return per_layer                                              # [L+1, N, hid]
+    return per_layer
 
 
 def linear_cka(X, Y):
@@ -107,110 +72,112 @@ def linear_cka(X, Y):
     return float(xy / (xx * yy + 1e-12))
 
 
-def pair_metrics(E1, E2, rng):
-    """``E1,E2``: ``[N, hid]`` for one layer. Returns a dict of metrics."""
+def _gold_ranks(S):
+    gold = np.diag(S)[:, None]
+    return (S > gold).sum(1) + 1
+
+
+def rank_metrics(S):
+    """Rank-based retrieval stats over both directions (pct_rank 1.0 = gold first, 0.5 = chance)."""
+    n = S.shape[0]
+    r = np.concatenate([_gold_ranks(S), _gold_ranks(S.T)])
+    pct = 1.0 - (r - 1) / (n - 1)
+    return {"median_pct_rank": float(np.median(pct)),
+            "mean_pct_rank": float(pct.mean()),
+            "mrr": float((1.0 / r).mean()),
+            "retrieval_p5": float((r <= 5).mean()),
+            "median_rank": float(np.median(r))}
+
+
+def csls(S, k=CSLS_K):
+    """Cross-domain similarity local scaling of a cosine matrix (Conneau et al. 2018)."""
+    if k <= 0:
+        return S
+    k = min(k, S.shape[0], S.shape[1])
+    r_t = np.sort(S, axis=1)[:, -k:].mean(1)
+    r_s = np.sort(S, axis=0)[-k:, :].mean(0)
+    return 2.0 * S - r_t[:, None] - r_s[None, :]
+
+
+def p_at_1(S):
+    n = S.shape[0]
+    return float(0.5 * ((S.argmax(1) == np.arange(n)).mean() + (S.argmax(0) == np.arange(n)).mean()))
+
+
+def pair_metrics(E1, E2, rng, k=CSLS_K):
+    """``E1,E2``: ``[N, hid]`` for one layer -> dict of every metric in FIELDS."""
     n = E1.shape[0]
     N1 = E1 / (np.linalg.norm(E1, axis=1, keepdims=True) + 1e-12)
     N2 = E2 / (np.linalg.norm(E2, axis=1, keepdims=True) + 1e-12)
-    S = N1 @ N2.T                                                 # [N, N] cosine
-    p1 = 0.5 * ((S.argmax(1) == np.arange(n)).mean() + (S.argmax(0) == np.arange(n)).mean())
+    S = N1 @ N2.T
+    C = csls(S, k)
     parallel = np.diag(S).mean()
     perm = rng.permutation(n)
     while np.any(perm == np.arange(n)):
         perm = rng.permutation(n)
     rand = S[np.arange(n), perm].mean()
-    cos_gap = float(parallel - rand)
-    cka = linear_cka(E1, E2)
-    centroid = float(np.linalg.norm(N1.mean(0) - N2.mean(0)))
-    return {"retrieval_p1": float(p1), "cos_gap": cos_gap, "cka": cka,
-            "centroid_dist": centroid}
+    out = {"retrieval_p1": p_at_1(C), "retrieval_p1_nn": p_at_1(S),
+           "cos_gap": float(parallel - rand), "cka": linear_cka(E1, E2),
+           "centroid_dist": float(np.linalg.norm(N1.mean(0) - N2.mean(0)))}
+    out.update(rank_metrics(C))
+    return out
 
 
-# --------------------------------------------------------------------------- #
-# Label -> (arm, seed) inference
-# --------------------------------------------------------------------------- #
-def arm_of(label: str) -> str:
-    """Ordering arm from a model label: 'curriculum' vs 'random'."""
-    return "curriculum" if ("curriculum" in label or "cur_" in label) else "random"
+def group_seed(label):
+    """Paper label convention: group = switched / noswitch; seed from ``-sNN``.
 
-
-def is_unilingual(label: str) -> bool:
-    """True for the no-code-switch (unilingual) arm of a label.
-
-    Matches ``noswitch`` / ``_nsw`` / ``-nsw`` so both the fig02_05 condition
-    names (``curriculum_noswitch``, ``noswitch``) and the fig03 trajectory labels
-    (``cur_noswitch-...``) resolve correctly. Note ``noswitch`` is NOT a substring
-    of ``switch``, so ``switch`` correctly reads as code-switched.
+    Handles final labels (``curriculum-s43``) and trajectory labels
+    (``cur_noswitch-s43-s2e5``).
     """
-    return ("noswitch" in label) or ("nsw" in label)
+    m = re.search(r"-s(\d+)(?:-s\d+e\d+)?$", label)
+    seed = int(m.group(1)) if m else 42
+    return ("noswitch" if common.is_noswitch(label) else "switched"), seed
 
 
-def seed_of(label: str) -> int:
-    """Parse the training seed from a label (42 if absent).
+def embed_cached(label, path, texts, device, cache_dir=None, batch=32):
+    """lang -> [L+1, N, hid]; served from ``cache_dir/<label>/<lang>.npy`` if present."""
+    if cache_dir is not None:
+        d = Path(cache_dir) / label
+        files = {lang: d / f"{lang}.npy" for lang in texts}
+        if all(f.exists() for f in files.values()):
+            emb = {lang: np.load(f) for lang, f in files.items()}
+            if all(e.shape[1] == len(texts[lang]) for lang, e in emb.items()):
+                print(f"[{label}] embeddings from cache {d}", flush=True)
+                return emb
+    print(f"[{label}] loading {path}", flush=True)
+    tok = common.load_tokenizer(path)
+    if tok.pad_token is None:
+        tok.pad_token = tok.eos_token
+    model = common.load_model(path, device=device, dtype=torch.float32)
+    emb = {lang: embed(model, tok, texts[lang], device, batch=batch) for lang in texts}
+    del model
+    if str(device).startswith("cuda"):
+        torch.cuda.empty_cache()
+    if cache_dir is not None:
+        d = Path(cache_dir) / label
+        d.mkdir(parents=True, exist_ok=True)
+        for lang, e in emb.items():
+            tmp = d / f"{lang}.npy.tmp"
+            with open(tmp, "wb") as fh:
+                np.save(fh, e.astype(np.float32))
+            tmp.rename(d / f"{lang}.npy")
+    return emb
 
-    Matches a ``-s<digits>`` group that is followed by ``-`` or end-of-string, so
-    ``curriculum-s43`` -> 43 and ``cur_cs-s42-s1e0`` -> 42 (the trailing ``-s1e0``
-    stage token is not followed by ``-``/end and is ignored).
-    """
-    m = re.findall(r"-s(\d+)(?=-|$)", label)
-    return int(m[0]) if m else 42
 
-
-def group_of(label: str) -> str:
-    """The ``group`` column value: the ordering arm (see :func:`arm_of`)."""
-    return arm_of(label)
-
-
-# --------------------------------------------------------------------------- #
-# Public compute entry point
-# --------------------------------------------------------------------------- #
-def retrieval_per_layer(model_labels, device="cuda", flores_cache=None,
-                        n_sents=997, batch=32, rng_seed=0):
-    """Per-(layer, pair) FLORES+ bitext retrieval P@1 for a set of checkpoints.
-
-    Parameters
-    ----------
-    model_labels : dict[str, str | Path]
-        ``{label: model_dir_or_hf_id}``. ``group``/``seed`` are inferred from each
-        label (see module docstring). Models are loaded via ``common.load_model`` /
-        ``common.load_tokenizer`` (so ``final_checkpoint`` resolution applies).
-    device : str
-        Torch device string (``"cuda"`` / ``"cpu"``).
-    flores_cache : tuple | None
-        Optional pre-loaded ``(texts, n)`` probe set to avoid re-downloading.
-    Returns
-    -------
-    pandas.DataFrame
-        columns ``model, group, seed, layer, pair, retrieval_p1, cos_gap, cka,
-        centroid_dist``.
-    """
+def retrieval_per_layer(model_labels, device="cuda", flores_cache=None, n_sents=997,
+                        csls_k=CSLS_K, emb_cache=None, rng_seed=0):
+    """Score ``{label: model_dir}`` -> long-format DataFrame with columns FIELDS."""
     import pandas as pd
-
-    if flores_cache is not None:
-        texts, n = flores_cache
-    else:
-        texts, n = load_flores_plus(n_sents)
-    print(f"probe: FLORES+ dev, {n} aligned sentences x {list(texts)}", flush=True)
+    texts, n = flores_cache if flores_cache is not None else load_flores_plus(n_sents)
+    print(f"probe: FLORES+ dev, {n} aligned sentences x {list(texts)}; CSLS k={csls_k}", flush=True)
     rng = np.random.default_rng(rng_seed)
-
     rows = []
     for label, path in model_labels.items():
-        grp, seed = group_of(label), seed_of(label)
-        print(f"[{label}] group={grp} seed={seed} loading {path}", flush=True)
-        tok = common.load_tokenizer(path)
-        if tok.pad_token is None:
-            tok.pad_token = tok.eos_token
-        model = common.load_model(path, device=device, dtype=torch.float32)
-        emb = {lang: embed(model, tok, texts[lang], device, batch=batch) for lang in texts}
-        n_layers = emb["eng"].shape[0]
-        for layer in range(n_layers):
+        grp, seed = group_seed(label)
+        emb = embed_cached(label, path, texts, device, emb_cache)
+        for layer in range(emb["eng"].shape[0]):
             for a, b in PAIRS:
-                mt = pair_metrics(emb[a][layer], emb[b][layer], rng)
+                mt = pair_metrics(emb[a][layer], emb[b][layer], rng, k=csls_k)
                 rows.append({"model": label, "group": grp, "seed": seed,
                              "layer": layer, "pair": f"{a}-{b}", **mt})
-        del model
-        if str(device).startswith("cuda"):
-            torch.cuda.empty_cache()
-
-    return pd.DataFrame(rows, columns=["model", "group", "seed", "layer", "pair",
-                                       "retrieval_p1", "cos_gap", "cka", "centroid_dist"])
+    return pd.DataFrame(rows, columns=FIELDS)

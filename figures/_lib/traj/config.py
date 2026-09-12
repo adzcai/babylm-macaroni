@@ -1,135 +1,87 @@
-"""Config + per-checkpoint discovery for the alignment-trajectory pipeline.
+"""Config + checkpoint discovery for the word-level pipeline (Figs 4 and 8).
 
-This replaces the paper's ``traj_common.py`` mechanism (a per-seed
-``config_v2_s<seed>.yaml`` selected through the ``CS_TRAJ_CONFIG`` env var, whose
-paths pointed under a private ``lmkiddo`` tree). Here a config is a plain dict
-built from ``(models_dir, data_dir, out_dir, seed)`` — every path is derived from
-the three portable roots resolved in ``figures/common.py``.
+The paper selected a per-seed ``config_v2_s<seed>.yaml`` whose checkpoint paths
+pointed under a private tree. Here a config is a plain dict built from the repo's
+portable roots, and checkpoints are discovered under ``models/<condition>[-sNN]/``.
 
-Two arms are compared, keyed internally by the SAME short names the paper's
-statistics code uses (``cs`` / ``noswitch``) so the ported ``measure``/``stats``
-modules are byte-faithful. Each arm maps to a public training condition:
+Two arms are compared, keyed by the short names the paper's code uses:
 
     cs        -> curriculum            (the code-switched curriculum)
-    noswitch  -> curriculum_noswitch   (the monolingual twin)
+    noswitch  -> curriculum_noswitch   (its non-CS twin)
 
-CHECKPOINT DISCOVERY. The paper hard-listed ``checkpoint-<step>`` dirs under
-``lmkiddo``. This figure needs the model at TEN points along training for BOTH
-arms (init, then epochs 1/5/10 within each of the 3 curriculum stages). Those
-intermediate checkpoints are discovered on disk under
-``model_dir(condition, seed, models_dir)`` — NOT by hard-coded step number
-(steps-per-epoch differ per seed/arm), but by reading each candidate
-``checkpoint-*/trainer_state.json`` and matching its rounded ``epoch`` within the
-stage. See ``discover_checkpoints`` and the ``CheckpointsMissing`` error.
+Figures 4 and 8 read only the FINAL checkpoint of each arm (published on the
+Hub). ``discover_checkpoints`` additionally locates the ten trajectory
+checkpoints per arm (init + epochs 1/5/10 of each stage) when they exist on disk
+(``models/<condition>/stage{1,2,3}/checkpoint-*``, as written by ``train.py``).
 """
 from __future__ import annotations
 
 import hashlib
+import json
 from pathlib import Path
 
-# The internal arm key -> public training condition (download_models.py names).
 ARM_CONDITION = {"cs": "curriculum", "noswitch": "curriculum_noswitch"}
-
-# The three curriculum stages -> the phase parquet basename under the corpus
-# (data/<condition>/{1_intra,2_sentence,3_mono}.parquet).
 STAGE_PHASE = {"stage1": "1_intra", "stage2": "2_sentence", "stage3": "3_mono"}
-
-# The ten measured points, in trajectory order. Epoch 0 of stage1 is the shared
-# initialisation (both arms start identical); stages 2/3 have no epoch-0 point
-# because their epoch 0 == the previous stage's final checkpoint.
 CKPT_ORDER = [("stage1", 0), ("stage1", 1), ("stage1", 5), ("stage1", 10),
               ("stage2", 1), ("stage2", 5), ("stage2", 10),
               ("stage3", 1), ("stage3", 5), ("stage3", 10)]
+FINAL = ("stage3", 10)
 
 
 class CheckpointsMissing(FileNotFoundError):
-    """Raised when the per-checkpoint trajectory models are not on disk.
-
-    The published Hub repo ships only each condition's FINAL checkpoint, so the
-    intermediate trajectory checkpoints — especially for the no-CS arm — must be
-    supplied separately (re-train saving milestone checkpoints, or drop the
-    intermediates into the expected layout). The message lists exactly what was
-    looked for and what is absent.
-    """
+    """Raised when required checkpoints are not on disk (message lists the gaps)."""
 
 
-def build_config(models_dir, data_dir, out_dir, seed: int,
-                 n_layers: int = 12, layer_aggregate=None) -> dict:
-    """Build a trajectory-pipeline config from the portable roots.
-
-    Parameters
-    ----------
-    models_dir, data_dir : path-like
-        The repo's ``models/`` and ``data/`` roots (see ``common.resolve_paths``).
-    out_dir : path-like
-        Per-seed working/output directory; all intermediates land here.
-    seed : int
-        Model seed (42/43/44). Selects the model branch via ``model_dir``.
-    n_layers : int, default 12
-        Number of TRANSFORMER layers. Extraction stores every hidden state
-        (``n_layers + 1`` including the embedding layer) but sizes its buffers
-        from the model at runtime, so this is only a sanity reference.
-    layer_aggregate : list[int] | None
-        Hidden-state indices pooled into the "upper-layer" estimand. Default is
-        the paper's ``[6, 7, 8, 9, 10, 11]`` (0 = embedding … n = top).
-    """
-    models_dir = Path(models_dir)
-    data_dir = Path(data_dir)
+def build_config(models_dir, data_dir, out_dir, seed: int, babylm_dir=None,
+                 layer_aggregate=None) -> dict:
+    """Pipeline knobs (verbatim from the paper's config_v2_s*.yaml) + portable roots."""
     out_dir = Path(out_dir)
     out_dir.mkdir(parents=True, exist_ok=True)
+    data_dir = Path(data_dir)
     return {
-        "models_dir": models_dir,
-        "data_dir": data_dir,
-        "out_dir": out_dir,
+        "models_dir": Path(models_dir), "data_dir": data_dir, "out_dir": out_dir,
+        "babylm_dir": Path(babylm_dir) if babylm_dir else data_dir / "babylm",
         "seed": int(seed),
-        # --- pipeline knobs (verbatim from config_v2_s*.yaml) ---
-        "k_contexts": 20,
-        "caliper_log10": 0.1,
-        "pos_purity_min": 0.8,
-        "max_sent_chars": 300,
-        "min_sent_chars": 10,
-        "layer_aggregate": list(layer_aggregate) if layer_aggregate is not None
-        else [6, 7, 8, 9, 10, 11],
-        "n_layers": int(n_layers),
-        "batch_size": 64,
-        "bootstrap_n": 2000,
-        # bootstrap RNG seed — CONSTANT across model seeds (was config `seed: 0`).
-        "bootstrap_seed": 0,
+        "k_contexts": 20, "caliper_log10": 0.1, "pos_purity_min": 0.8,
+        "max_sent_chars": 300, "min_sent_chars": 10,
+        "layer_aggregate": list(layer_aggregate) if layer_aggregate else [6, 7, 8, 9, 10, 11],
+        "batch_size": 64, "bootstrap_n": 2000, "bootstrap_seed": 0,
         "arms": dict(ARM_CONDITION),
     }
 
 
-# --------------------------------------------------------------------------- #
-# Corpus / lexicon input locations (all under data_dir), and tokenizer.
-# --------------------------------------------------------------------------- #
 def phase_parquet(cfg, condition: str, stage: str) -> Path:
-    """Corpus parquet for a (condition, stage): data/<condition>/<phase>.parquet."""
     return cfg["data_dir"] / condition / f"{STAGE_PHASE[stage]}.parquet"
 
 
 def tokenizer_json(cfg) -> Path:
-    """The tokenizer.json shared by every model.
-
-    Resolved from the curriculum model's final checkpoint (every downloaded model
-    dir carries its tokenizer). Replaces the old absolute ``tokenizer_json`` path.
-    """
+    """The shared tokenizer.json, taken from the curriculum model's weights dir."""
     import common
-    md = common.model_dir("curriculum", cfg["seed"], cfg["models_dir"])
-    ck = common.final_ckpt(md)
+    ck = common.final_ckpt(common.model_dir("curriculum", cfg["seed"], cfg["models_dir"]))
     tj = Path(ck) / "tokenizer.json"
     if not tj.is_file():
         raise CheckpointsMissing(
-            f"tokenizer.json not found under {ck}. Download the curriculum model "
-            f"first: python download_models.py --only curriculum --seeds {cfg['seed']}")
+            f"tokenizer.json not found under {ck}. Download the curriculum model first: "
+            f"python download_models.py --only curriculum --seeds {cfg['seed']}")
     return tj
 
 
-# --------------------------------------------------------------------------- #
-# Per-checkpoint discovery (replaces iter_checkpoints' lmkiddo lookups).
-# --------------------------------------------------------------------------- #
+def final_checkpoints(cfg):
+    """``[(arm, 'stage3', 10, weights_dir)]`` for both arms' final checkpoints."""
+    import common
+    out, missing = [], []
+    for arm, condition in cfg["arms"].items():
+        md = common.model_dir(condition, cfg["seed"], cfg["models_dir"])
+        try:
+            out.append((arm, *FINAL, Path(common.final_ckpt(md))))
+        except FileNotFoundError as e:
+            missing.append(f"  [{arm}={condition}] {e}")
+    if missing:
+        raise CheckpointsMissing("final checkpoints missing:\n" + "\n".join(missing))
+    return out
+
+
 def _read_epoch(ckpt: Path):
-    """Rounded integer epoch from a checkpoint's trainer_state.json, or None."""
-    import json
     st = ckpt / "trainer_state.json"
     if not st.is_file():
         return None
@@ -139,73 +91,45 @@ def _read_epoch(ckpt: Path):
         return None
 
 
-def _stage_dirs(model_root: Path, stage: str):
-    """Candidate directories that may hold a stage's ``checkpoint-*`` dirs.
-
-    Supports both a per-stage subdir layout (``<model>/<stage>/checkpoint-*`` or
-    ``<model>/<phase>/checkpoint-*``) and a flat layout (``<model>/checkpoint-*``).
-    """
-    cands = [model_root / stage, model_root / STAGE_PHASE[stage], model_root]
-    return [d for d in cands if d.is_dir()]
-
-
 def _find_checkpoint(model_root: Path, stage: str, epoch: int):
-    """Locate the checkpoint dir for (stage, epoch) under a model root, or None.
-
-    epoch 0 of stage1 is the shared init: prefer an explicit ``checkpoint-0``,
-    else the model root itself if it already holds ``config.json``.
-    """
-    if stage == "stage1" and epoch == 0:
-        for d in _stage_dirs(model_root, stage):
-            c0 = d / "checkpoint-0"
-            if (c0 / "config.json").is_file():
-                return c0
-        if (model_root / "config.json").is_file():
-            return model_root
+    d = model_root / stage
+    if not d.is_dir():
         return None
-    for d in _stage_dirs(model_root, stage):
-        for ck in sorted(d.glob("checkpoint-*")):
-            if (ck / "config.json").is_file() and _read_epoch(ck) == epoch:
-                return ck
+    if stage == "stage1" and epoch == 0:
+        c0 = d / "checkpoint-0"
+        return c0 if (c0 / "config.json").is_file() else None
+    for ck in sorted(d.glob("checkpoint-*")):
+        if (ck / "config.json").is_file() and _read_epoch(ck) == epoch:
+            return ck
     return None
 
 
 def discover_checkpoints(cfg):
-    """Yield ``(arm, stage, epoch, ckpt_dir)`` for every trajectory point.
+    """``[(arm, stage, epoch, ckpt_dir)]`` for all ten trajectory points of both arms.
 
-    Raises ``CheckpointsMissing`` (listing all gaps) if any point is absent —
-    fabricating a trajectory from whatever happens to be on disk would silently
-    corrupt the DiD, so the pipeline refuses to proceed with a partial set.
+    Raises ``CheckpointsMissing`` (listing every gap) if any point is absent: a
+    trajectory is never assembled from a partial set.
     """
     import common
     found, missing = [], []
     for arm, condition in cfg["arms"].items():
-        model_root = common.model_dir(condition, cfg["seed"], cfg["models_dir"])
+        root = common.model_dir(condition, cfg["seed"], cfg["models_dir"])
         for stage, epoch in CKPT_ORDER:
-            ck = _find_checkpoint(model_root, stage, epoch)
+            ck = _find_checkpoint(root, stage, epoch)
             if ck is None:
-                missing.append(f"  [{arm}={condition}] {stage} ep{epoch}: "
-                               f"no checkpoint under {model_root}")
+                missing.append(f"  [{arm}={condition}] {stage} ep{epoch}: not under {root}/{stage}/")
             else:
                 found.append((arm, stage, epoch, Path(ck)))
     if missing:
         raise CheckpointsMissing(
-            "Per-checkpoint TRAJECTORY models are missing (Fig 7 needs the model "
-            "at 10 points per arm):\n" + "\n".join(missing) +
-            "\n\nThe published Hub repo ships only each condition's FINAL "
-            "checkpoint. The intermediate checkpoints — especially for the no-CS "
-            "arm (curriculum_noswitch), which are NOT on the Hub — must be "
-            "supplied. Re-train each arm saving milestone checkpoints at epochs "
-            "0/1/5/10 within each stage, laid out as "
-            "models/<condition>[-sNN]/<stage>/checkpoint-<step>/ with a "
-            "trainer_state.json recording the epoch, or drop equivalent "
-            "intermediates there.")
+            "Per-checkpoint TRAJECTORY models are missing:\n" + "\n".join(missing) +
+            "\n\nThe Hub ships only final checkpoints. Train both curriculum arms "
+            "locally (python train.py --corpus curriculum / curriculum_noswitch), "
+            "which saves checkpoint-0 and the epoch 1/5/10 checkpoints of every stage "
+            "under models/<condition>[-sNN]/stage{1,2,3}/.")
     return found
 
 
-# --------------------------------------------------------------------------- #
-# Hashing (frozen measurement-set integrity; verbatim from traj_common.py).
-# --------------------------------------------------------------------------- #
 def sha256_file(path) -> str:
     h = hashlib.sha256()
     with open(path, "rb") as f:
@@ -215,7 +139,6 @@ def sha256_file(path) -> str:
 
 
 def sha256_strings(items) -> str:
-    """Order-sensitive hash of a list of strings (for the frozen word list)."""
     h = hashlib.sha256()
     for s in items:
         h.update(s.encode("utf-8"))

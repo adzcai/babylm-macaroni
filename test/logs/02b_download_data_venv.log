@@ -1,0 +1,41 @@
+/n/netscratch/kdbrantley_lab/Lab/adzcai/multilingual/multilingual-macaroni/.venv/lib64/python3.12/site-packages/huggingface_hub/utils/_validators.py:205: UserWarning: The `local_dir_use_symlinks` argument is deprecated and ignored in `snapshot_download`. Downloading to a local directory does not use symlinks anymore.
+  warnings.warn(
+using HF_TOKEN from environment
+repo-id  : drooryck/multilingual-macaroni-corpus (dataset)
+revision : main
+data-dir : test/data
+subsets  : switch, noswitch, word, sent, par, salad, curriculum, curriculum_noswitch
+
+[switch] downloading switch/* ...
+Fetching 1 files:   0%|          | 0/1 [00:00<?, ?it/s]Fetching 1 files: 100%|██████████| 1/1 [00:00<00:00, 71.54it/s]
+  ok -> /n/netscratch/kdbrantley_lab/Lab/adzcai/multilingual/multilingual-macaroni/test/data/switch
+
+[noswitch] downloading noswitch/* ...
+Fetching 1 files:   0%|          | 0/1 [00:00<?, ?it/s]Fetching 1 files: 100%|██████████| 1/1 [00:00<00:00, 105.70it/s]
+  ok -> /n/netscratch/kdbrantley_lab/Lab/adzcai/multilingual/multilingual-macaroni/test/data/noswitch
+
+[word] downloading word/* ...
+Fetching 1 files:   0%|          | 0/1 [00:00<?, ?it/s]Fetching 1 files: 100%|██████████| 1/1 [00:00<00:00, 66.92it/s]
+  ok -> /n/netscratch/kdbrantley_lab/Lab/adzcai/multilingual/multilingual-macaroni/test/data/word
+
+[sent] downloading sent/* ...
+Fetching 1 files:   0%|          | 0/1 [00:00<?, ?it/s]Fetching 1 files: 100%|██████████| 1/1 [00:00<00:00, 71.09it/s]
+  ok -> /n/netscratch/kdbrantley_lab/Lab/adzcai/multilingual/multilingual-macaroni/test/data/sent
+
+[par] downloading par/* ...
+Fetching 1 files:   0%|          | 0/1 [00:00<?, ?it/s]Fetching 1 files: 100%|██████████| 1/1 [00:00<00:00, 70.53it/s]
+  ok -> /n/netscratch/kdbrantley_lab/Lab/adzcai/multilingual/multilingual-macaroni/test/data/par
+
+[salad] downloading salad/* ...
+Fetching 1 files:   0%|          | 0/1 [00:00<?, ?it/s]Fetching 1 files: 100%|██████████| 1/1 [00:00<00:00, 89.15it/s]
+  ok -> /n/netscratch/kdbrantley_lab/Lab/adzcai/multilingual/multilingual-macaroni/test/data/salad
+
+[curriculum] downloading curriculum/* ...
+Fetching 3 files:   0%|          | 0/3 [00:00<?, ?it/s]Fetching 3 files: 100%|██████████| 3/3 [00:00<00:00, 129.00it/s]
+  ok -> /n/netscratch/kdbrantley_lab/Lab/adzcai/multilingual/multilingual-macaroni/test/data/curriculum
+
+[curriculum_noswitch] downloading curriculum_noswitch/* ...
+Fetching 3 files:   0%|          | 0/3 [00:00<?, ?it/s]Fetching 3 files: 100%|██████████| 3/3 [00:00<00:00, 164.81it/s]
+  ok -> /n/netscratch/kdbrantley_lab/Lab/adzcai/multilingual/multilingual-macaroni/test/data/curriculum_noswitch
+
+DONE. corpora under /n/netscratch/kdbrantley_lab/Lab/adzcai/multilingual/multilingual-macaroni/test/data

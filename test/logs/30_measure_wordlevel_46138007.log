@@ -1,0 +1,74 @@
+NVIDIA H200, 143771 MiB
+python: /n/netscratch/kdbrantley_lab/Lab/adzcai/multilingual/multilingual-macaroni/.venv/bin/python  Python 3.12.14
+[lexicon] reusing mined corpus stats under /n/netscratch/kdbrantley_lab/Lab/adzcai/multilingual/multilingual-macaroni/test/data/align
+[lexicon] building the evaluation lexicon (attested + MUSE) -> /n/netscratch/kdbrantley_lab/Lab/adzcai/multilingual/multilingual-macaroni/test/data/align
+[freq] eng: 137710 docs, 498702 types -> /n/netscratch/kdbrantley_lab/Lab/adzcai/multilingual/multilingual-macaroni/test/data/freq_eng.tsv
+[freq] nld: 304611 docs, 632345 types -> /n/netscratch/kdbrantley_lab/Lab/adzcai/multilingual/multilingual-macaroni/test/data/freq_nld.tsv
+[freq] zho: 203891 docs, 714268 types -> /n/netscratch/kdbrantley_lab/Lab/adzcai/multilingual/multilingual-macaroni/test/data/freq_zho.tsv
+[pos_map] tagging /n/netscratch/kdbrantley_lab/Lab/adzcai/multilingual/multilingual-macaroni/test/data/curriculum_noswitch/1_intra.parquet (spaCy/jieba)
+  20000 docs...
+  40000 docs...
+  60000 docs...
+[pos_map] docs=76243 types=528174 -> /n/netscratch/kdbrantley_lab/Lab/adzcai/multilingual/multilingual-macaroni/test/out/wordlevel/s42/pos_map.parquet
+  eng->nld: E=13375 C=363 -> matched 359
+  eng->zho: E=9065 C=232 -> matched 225
+  nld->eng: E=15125 C=187 -> matched 183
+  nld->zho: E=2856 C=0 -> UNUSABLE (no never-embedded controls)
+  zho->eng: E=11603 C=312 -> matched 290
+  zho->nld: E=6481 C=0 -> UNUSABLE (no never-embedded controls)
+[build_sets] TOTAL matched pairs: 1057 -> /n/netscratch/kdbrantley_lab/Lab/adzcai/multilingual/multilingual-macaroni/test/out/wordlevel/s42/measurement_pairs_mono_freq.parquet
+[contexts] lang=eng words=1943 K=20
+[contexts] wrote 38726 -> /n/netscratch/kdbrantley_lab/Lab/adzcai/multilingual/multilingual-macaroni/test/out/wordlevel/s42/contexts_eng.jsonl | >=1 ctx: 1943/1943 | full K: 1881
+           sha256=3b1c44f5efc964ea
+[contexts] lang=nld words=1009 K=20
+[contexts] wrote 20148 -> /n/netscratch/kdbrantley_lab/Lab/adzcai/multilingual/multilingual-macaroni/test/out/wordlevel/s42/contexts_nld.jsonl | >=1 ctx: 1009/1009 | full K: 998
+           sha256=e9aa56f76b821538
+[contexts] lang=zho words=982 K=20
+[contexts] wrote 15789 -> /n/netscratch/kdbrantley_lab/Lab/adzcai/multilingual/multilingual-macaroni/test/out/wordlevel/s42/contexts_zho.jsonl | >=1 ctx: 969/982 | full K: 620
+           sha256=9febac0572ddea0a
+[extract] measurement set: 3921 words, 74663 contexts (set 37b1ce2a4a624dca words bc8983f69d974c58)
+[extract] === cs stage3 ep10 (/n/netscratch/kdbrantley_lab/Lab/adzcai/multilingual/multilingual-macaroni/test/models/curriculum) ===
+The following generation flags are not valid and may be ignored: ['output_hidden_states']. Set `TRANSFORMERS_VERBOSITY=info` for more details.
+[extract]  -> reps_cs_stage3_ep10.npz  words with >=1 ctx: 3921/3921
+[extract] === noswitch stage3 ep10 (/n/netscratch/kdbrantley_lab/Lab/adzcai/multilingual/multilingual-macaroni/test/models/curriculum_noswitch) ===
+[extract]  -> reps_noswitch_stage3_ep10.npz  words with >=1 ctx: 3921/3921
+[exposure_rank] s42: 2 checkpoint files, 1040 pairs
+[divergence] s42: 1040/1057 pairs with contexts for both members
+[contexts] skip (exists) contexts_eng.jsonl
+[contexts] skip (exists) contexts_nld.jsonl
+[contexts] skip (exists) contexts_zho.jsonl
+[extract] measurement set: 3921 words, 74663 contexts (set 37b1ce2a4a624dca words bc8983f69d974c58)
+[extract] === cs stage3 ep10 (/n/netscratch/kdbrantley_lab/Lab/adzcai/multilingual/multilingual-macaroni/test/models/curriculum-s43) ===
+[extract]  -> reps_cs_stage3_ep10.npz  words with >=1 ctx: 3921/3921
+[extract] === noswitch stage3 ep10 (/n/netscratch/kdbrantley_lab/Lab/adzcai/multilingual/multilingual-macaroni/test/models/curriculum_noswitch-s43) ===
+[extract]  -> reps_noswitch_stage3_ep10.npz  words with >=1 ctx: 3921/3921
+[exposure_rank] s43: 2 checkpoint files, 1040 pairs
+[divergence] s43: 1040/1057 pairs with contexts for both members
+[contexts] skip (exists) contexts_eng.jsonl
+[contexts] skip (exists) contexts_nld.jsonl
+[contexts] skip (exists) contexts_zho.jsonl
+[extract] measurement set: 3921 words, 74663 contexts (set 37b1ce2a4a624dca words bc8983f69d974c58)
+[extract] === cs stage3 ep10 (/n/netscratch/kdbrantley_lab/Lab/adzcai/multilingual/multilingual-macaroni/test/models/curriculum-s44) ===
+[extract]  -> reps_cs_stage3_ep10.npz  words with >=1 ctx: 3921/3921
+[extract] === noswitch stage3 ep10 (/n/netscratch/kdbrantley_lab/Lab/adzcai/multilingual/multilingual-macaroni/test/models/curriculum_noswitch-s44) ===
+[extract]  -> reps_noswitch_stage3_ep10.npz  words with >=1 ctx: 3921/3921
+[exposure_rank] s44: 2 checkpoint files, 1040 pairs
+[divergence] s44: 1040/1057 pairs with contexts for both members
+wrote 60 rows -> /n/netscratch/kdbrantley_lab/Lab/adzcai/multilingual/multilingual-macaroni/test/out/results/exposure_rank.csv
+wrote 117 rows -> /n/netscratch/kdbrantley_lab/Lab/adzcai/multilingual/multilingual-macaroni/test/out/results/word_divergence.csv
+
+=== fig4_exposure_generalization ===
+$ /n/netscratch/kdbrantley_lab/Lab/adzcai/multilingual/multilingual-macaroni/.venv/bin/python /n/netscratch/kdbrantley_lab/Lab/adzcai/multilingual/multilingual-macaroni/figures/fig4_exposure_generalization.py --out test/out/figures_regenerated --results-dir test/out/results
+wrote /n/netscratch/kdbrantley_lab/Lab/adzcai/multilingual/multilingual-macaroni/test/out/figures_regenerated/fig4_exposure_generalization.pdf
+  all       delta: seen +0.1081+-0.0069  never +0.0714+-0.0072  retention 66.1%  n=1,040
+  balanced  delta: seen +0.1624+-0.0069  never +0.1260+-0.0093  retention 77.6%  n=580
+
+=== fig8_word_divergence ===
+$ /n/netscratch/kdbrantley_lab/Lab/adzcai/multilingual/multilingual-macaroni/.venv/bin/python /n/netscratch/kdbrantley_lab/Lab/adzcai/multilingual/multilingual-macaroni/figures/fig8_word_divergence.py --out test/out/figures_regenerated --results-dir test/out/results
+wrote /n/netscratch/kdbrantley_lab/Lab/adzcai/multilingual/multilingual-macaroni/test/out/figures_regenerated/fig8_word_divergence_by_layer.pdf
+
+==================================================
+SUMMARY
+  ok                   fig4_exposure_generalization
+  ok                   fig8_word_divergence
+DONE

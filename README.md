@@ -1,125 +1,90 @@
-Disclaimer: This anonymized code was generated mostly by AI from the research monorepo for the review period.
-
 # multilingual-macaroni
 
-Code **"Feeding BabyLMs Macaroni: Investigating Code-Switched Curriculum
-Learning in Data-Constrained Multilingual Modelling"** (BabyLM 2026, Multilingual track).
+Code to reproduce **"Feeding BabyLMs Macaroni: Code-Switching Curricula Cause Cross-Lingual
+Convergence"** (BabyLM 2026, multilingual track).
 
-We train GPT-2 BabyLMs from scratch on synthetic **code-switched** English/Dutch/Chinese under a
-100M-word budget (word-level → sentence-level → monolingual). This repo lets you set up the environment,
-download the corpora, train a model (or pull ours), evaluate it, and regenerate most figures.
+We train GPT-2 models from scratch on English/Dutch/Chinese under the 100M-word BabyLM budget,
+on a monolingual corpus and on a synthetic **code-switched** (CS) variant of it, shuffled or as a
+three-stage curriculum (word-level CS → sentence-level CS → monolingual). This repo sets up the
+environment, downloads the corpora and models, trains and evaluates a model, and regenerates every
+figure of the paper.
 
-## Artifacts (already public on HuggingFace)
-- Corpora — [`drooryck/multilingual-macaroni-corpus`](https://huggingface.co/datasets/drooryck/multilingual-macaroni-corpus) (8 subsets)
-- Models — [`drooryck/multilingual-macaroni-models`](https://huggingface.co/drooryck/multilingual-macaroni-models) (24 models on branches: 8 conditions × seeds 42/43/44)
+**Artifacts on the HuggingFace Hub**
+- Corpora: [`drooryck/multilingual-macaroni-corpus`](https://huggingface.co/datasets/drooryck/multilingual-macaroni-corpus) (8 subsets)
+- Models: [`drooryck/multilingual-macaroni-models`](https://huggingface.co/drooryck/multilingual-macaroni-models) (one branch per condition × seed; seeds 42–44 of the paper's 42–49)
 
-The 8 conditions: `switch` (full CS, shuffled), `noswitch` (monolingual twin), `word` / `sent` /
-`par` / `salad` (switch-type ablations), `curriculum` (= the submission `babylm-macaroni`; same data
-as `switch`, staged), `curriculum_noswitch` (monolingual staged twin).
+The 8 conditions (= corpus subsets = model names): `switch` (CS, shuffled), `noswitch` (its
+non-CS twin), `curriculum` / `curriculum_noswitch` (the same data staged as a curriculum), and the
+four shuffled-ordering controls `word`, `sent`, `par`, `salad`.
 
----
-
-## Give commands
+## Quick start
 
 ```bash
-# (1) SET UP — venv, deps, and clone+pin the external trainer & evaluator
-bash setup.sh
-source .venv/bin/activate
+bash setup.sh && source .venv/bin/activate        # venv, deps, pinned BabyLM evaluator
+export HF_TOKEN=...                                # needed for the gated FLORES+ / BabyLM datasets
 
-# (2) DOWNLOAD CORPORA -> data/<subset>/
-python download_data.py                        # all 8; or --only switch curriculum ...
+python download_data.py                            # corpora  -> data/<subset>/
+python download_models.py                          # models   -> models/<condition>[-sNN]/
 
-# (3) TRAIN one condition -> models/<condition>[-sNN]/ ...
-python train.py --corpus curriculum --seed 42  # curriculum = 3-stage carry-forward
-python train.py --corpus switch     --seed 42  # single-run condition
-#     ... OR skip training and pull ours:
-python download_models.py                       # all -> models/; or --only curriculum switch
+python train.py --corpus curriculum --seed 42      # or train one yourself (1 GPU, ~2-7 h)
+python evaluate.py --model models/curriculum       # BabyLM eval suite -> out/eval/curriculum/
 
-# (4) EVALUATE a model (zero-shot + finetune incl. POS) -> out/eval/<label>/
-python evaluate.py --model models/curriculum
-
-# (5) REPRODUCE FIGURES (each: models -> CSV -> plot, one command)
-python figures/fig02_05_retrieval_per_layer.py --models-dir models --out out/figures
-python figures/make_all.py --models-dir models --data-dir data --out out/figures
+python figures/make_all.py                         # every data figure, from the paper's CSVs
 ```
 
-All scripts take `--models-dir` / `--data-dir` / `--out` (defaults `models` / `data` / `out`), also
-settable via `MACARONI_MODELS_DIR` / `MACARONI_DATA_DIR` / `MACARONI_OUT`.
+All scripts take `--models-dir` / `--data-dir` / `--out` (with defaults `models/`, `data/`, `out/`).
+Training, evaluation and the measurements require a GPU, but plotting does not.
 
----
+## Figures
+
+Every figure is produced with a measurement step (models → CSV) and a plotting step (CSV → PDF).
+The paper's CSV files are in `results/`, so one can reproduce the plots without any model training.
+(`figures/make_all.py` outputs into `out/figures/`, which you can compare with `figures_pdfs/`). To regenerate
+the CSVs from models, run the measurement scripts; they overwrite `results/` unless you pass
+`--results-dir`.
+
+| Figure | Plot script | CSV in `results/` | Measurement | Models needed |
+|---|---|---|---|---|
+| 1 | `figures/tex/fig1_overview.tex` (TikZ) | – | – | – |
+| 2 | `fig2_retrieval_per_layer.py` | `retrieval_finals.csv` | `measure_retrieval.py --set finals` | 4 main conditions, finals |
+| 3 | `fig3_retrieval_trajectory.py` | `retrieval_trajectory.csv` | `measure_retrieval.py --set trajectory` | **per-stage checkpoints** of `curriculum` + `curriculum_noswitch` |
+| 4 | `fig4_exposure_generalization.py` | `exposure_rank.csv` | `measure_wordlevel.py` | `curriculum` + `curriculum_noswitch`, finals |
+| 5 | `figures/tex/fig5_corpus_examples.tex` (table) | – | – | – |
+| 6 | `fig6_retrieval_median_rank.py` | `retrieval_finals.csv` | as Fig 2 | as Fig 2 |
+| 7 | `fig7_retrieval_all_conditions.py` | `retrieval_finals.csv` + `retrieval_controls.csv` | `measure_retrieval.py --set finals controls` | all 8 conditions, finals |
+| 8 | `fig8_word_divergence.py` | `word_divergence.csv` | `measure_wordlevel.py` | as Fig 4 |
+
+Figures 1 and 5 are hand-drawn LaTeX: `bash figures/tex/build.sh` (xelatex).
+
+**What each measurement needs beyond the corpora and models**
+- Figs 2, 3, 6, 7: the gated FLORES+ dev set (accept the terms on the Hub, set `HF_TOKEN`).
+- Figs 4, 8: `python download_aux.py` (the monolingual BabyLM corpora, gated, and the MUSE
+  dictionaries) plus the spaCy models installed by `setup.sh`. The word-pair set is re-derived
+  from these inputs, so the regenerated CSVs will use the same protocol but may not be exactly the same.
+- Fig 3: the intermediate checkpoints are **not on the Hub**. `train.py` saves them
+  (checkpoint-0 and epochs 1/5/10 of every stage under `models/<condition>/stage{1,2,3}/`), so
+  train both curriculum arms for the seeds you want, then run `measure_retrieval.py --set trajectory`.
+- Seeds: the paper averages seeds 42–49; the Hub has 42–44. `--seeds` selects what to score;
+  train the rest with `train.py --seed N` if you want the full eight.
 
 ## Layout
 
 ```
-setup.sh  requirements.txt  configs/{gpt2-baseline.json, train.yaml}
-download_data.py  download_models.py  train.py  evaluate.py  final_checkpoint.py
-figures/
-  common.py            # palette + path/model resolution (imported by every figNN)
-  _lib/                # ported, path-parameterized measurement code
-  figNN_*.py           # one per paper figure: load models -> compute CSV -> plot PNG/PDF
-  make_all.py          # run every figure
-models/  data/  out/   # gitignored: downloaded/trained artifacts + regenerable CSVs/figures
-MODEL_CARD.md  DATASET_CARD.md
+setup.sh  requirements.txt  configs/{gpt2-baseline.json, train.yaml}  patches/
+download_data.py  download_models.py  download_aux.py  train.py  evaluate.py  final_checkpoint.py
+training/        the BabyLM baseline trainer, vendored at the paper's commit (NOTICE.md)
+figures/         common.py (palette + paths), measure_*.py, figN_*.py, make_all.py, tex/, _lib/
+results/         the paper's measurement CSVs (inputs to the figN scripts)
+figures_pdfs/    the paper's figures 1-8 as PDFs
+test/            log + report of an end-to-end trial run of this README
+models/ data/ out/   gitignored: downloaded or trained artifacts and regenerated outputs
 ```
 
-A model lives at `models/<condition>/` (seed 42) or `models/<condition>-s43/` etc. Every figure and
-`evaluate.py` reads models by that name; training writes them there.
-
-## Figures ↔ paper
-
-| Script | Paper figure(s) | Needs |
-|---|---|---|
-| `fig02_05_retrieval_per_layer.py` | 2, 5 (bitext retrieval P@1 per layer) | published finals + FLORES+ |
-| `fig03_retrieval_trajectory.py` | 3 (retrieval over the curriculum) | ⚠️ trajectory checkpoints |
-| `fig04_06_wordlevel.py` | 4, 6 (word-level alignment) | finals (4); ⚠️ trajectory (6) |
-| `fig07_dd_trajectory.py` | 7 (embedded-word DiD over training) | ⚠️ trajectory checkpoints |
-| `fig08_repr_divergence.py` | 8 (how far CS moves a word) | finals + monolingual corpora (see Data) |
-| `fig09_embedded_own.py` | 9 (embedded vs own-language) | finals + monolingual corpora |
-| `fig10_grid_advantage.py` | 10 (context-invariance grid) | finals + monolingual corpora + Exp-3 pairs |
-| `fig11_dose_response.py` | 11 (dose-response, rising part only) | `noswitch` + `word` finals; maximal point not reproducible |
-
-Figure 1 is a TikZ schematic (`figures/fig1_directions.tex`).
-
----
-
-## Requirements
-
-- **GPU** for training, evaluation, and the figure measurements (representation extraction).
-- **HuggingFace token** (`export HF_TOKEN=...`): the retrieval figures (2, 3, 5) probe alignment on
-  **FLORES+** (`openlanguagedata/flores_plus`), which is **gated** — accept its terms on the Hub and
-  set `HF_TOKEN` before running them.
-- **spaCy models** for the POS-based figures: `python -m spacy download en_core_web_sm nl_core_news_sm`.
-
-### Data the figures need beyond `download_data.py` / `download_models.py`
-The 8 corpus subsets + 24 final models reproduce Figs **2 and 5** directly (given FLORES+). Some supplementary
-analysis figures (4, 6, 7, 8, 9, 10, 11) additionally read a few inputs that are not on the two
-Hub repos and will need to be manually generated.
-
-1. **Re-derivable from what you download**:
-   frequency tables `freq_{lang}.tsv`, the attested lexicon / corpus-frequency / exposure sets
-   (from `curriculum/1_intra` vs `curriculum_noswitch/1_intra`), and the Fig-7 POS map.
-2. **Public, but a separate download:** the **monolingual BabyLM corpora** — needed for the
-   "own-language" contexts of Figs 8/9/10 and Fig-7 context sampling. Fetch with
-   `python download_babylm.py` (→ `data/babylm/<lang>/`; confirm the repo ids via `--repo-template`),
-   then pass `--babylm-dir data/babylm` to those figures.
-3. **Author-supplied (not published):** the MUSE bilingual dictionaries (`data/muse/`, for the full
-   tiered eval lexicon — without them the lexicon degrades to attested-only), the Exp-3 matched-pair
-   table (`measurement_pairs_mono_freq.parquet`, Fig 10), and any pre-computed
-   `eval_lexicon`/`exposure_sets` if you want byte-identical inputs.
-4. ⚠️ Trajectory figures (3, 6, 7) These need *per-checkpoint* models for **both** curriculum arms, but we currently only publish the CS-curriculum arm's
-  checkpoints (as `chck_*M` on `drooryck/babylm-macaroni`). To reproduce them, re-train `curriculum`/`curriculum_noswitch` saving
-  milestone checkpoints (see `train.py --help`).
-
-### Notes
-- **Single-seed vs 3-seed error bars:** the paper averaged 3 seeds. The static-alignment figures
-  (4, 6, 11) run per `--seed`; run them across seeds 42/43/44 and pool for the paper's mean±SD (or
-  accept single-seed point estimates without seed-variance bands).
-- **Pins:** `setup.sh` clones `multilingual-training@fec6db2c…` (trainer) and
-  `babylm-eval@6f825c29…` (evaluator). The trainer commit is the current tip of `main` on the
-  `llam11/multilingual-training` fork (the canonical source for it — it is not on the `babylm-org`
-  upstream). Override the source with `TRAINING_URL=... TRAINING_REF=<sha> bash setup.sh` if needed.
+A model lives at `models/<condition>/` (seed 42) or `models/<condition>-s43/` etc.; every script
+reads and writes models by that name. A downloaded model is a plain HF directory; a trained one
+holds `checkpoint-*/` (single run) or `stage{1,2,3}/checkpoint-*/` (curriculum), and the scripts
+pick the final checkpoint.
 
 ## Citation
 
-If you use this code or the artifacts, please cite the paper.
-Released under the MIT License.
+Please cite the paper if you use this code or the artifacts. MIT License.

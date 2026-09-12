@@ -20,7 +20,6 @@ WITHIN-LANGUAGE only — which is all that is needed (controls are same-language
 """
 from __future__ import annotations
 
-import sys
 from collections import defaultdict, Counter
 from pathlib import Path
 
@@ -49,9 +48,6 @@ def _tag_zho(texts):
 
 def _tag_spacy(texts, lang):
     """Yield [(token, UPOS), ...] per text using spaCy."""
-    # spaCy's small models are numpy/thinc-based; block torch so thinc uses numpy
-    # (torch's cu124 build can't load on CPU-only nodes).
-    sys.modules.setdefault("torch", None)
     try:
         import spacy
     except ImportError as e:  # pragma: no cover

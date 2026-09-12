@@ -1,0 +1,107 @@
+% Figure 1, part A — the three corpus splits with verbatim v2-corpus snippets
+% (mined by scripts/fig_snippets.py in cs-analysis): monolingual sources
+% (top; the doc-id-aligned twins of three panel-(c) examples), sentence-level
+% CS as a directed language triangle (middle), word-level CS as a directed
+% triangle with all six matrix<-donor directions (bottom). Single-column.
+% Body only: the figure environment, part header, caption and label are in
+% main.tex. Requires (main.tex preamble): \zh, colors langEN/langNL/langZH,
+% intracol/sentcol/monocol, the langchip style, tikz libs calc + arrows.meta.
+\tikzset{
+  panelhead/.style={fill=#1, rounded corners=2pt, minimum width=7.3cm,
+    inner ysep=2.5pt, font=\scriptsize\bfseries, text=black!75},
+  exlab/.style={font=\tiny, inner sep=1.2pt, fill=white, text=black!80},
+  csarrow/.style={-{Stealth[length=4pt,width=3.5pt]}, line width=0.7pt},
+}
+
+% ---------------- (a) monolingual sources ----------------
+\begin{tikzpicture}[x=1cm,y=1cm]
+  \node[panelhead=monocol!30] at (3.7,0.75) {Non-CS data};
+  \node[langchip={langEN}{}] (en) at (1.2,0) {en};
+  \node[langchip={langNL}{}] (nl) at (3.7,0) {nl};
+  \node[langchip={langZH}{}] (zh) at (6.2,0) {zh};
+  \node[font=\tiny, text=langEN, align=center] at (1.2,-0.55) {That's illegal!};
+  \node[font=\tiny, text=langNL, align=center] at (3.7,-0.55) {Geef me een kus .};
+  \node[font=\tiny, text=langZH, align=center] at (6.2,-0.55) {\zh{有什么区别}?};
+\end{tikzpicture}
+
+\vspace{1pt}
+
+% ---------------- (b) sentence-level CS: directed triangle ----------------
+% Arrows run donor -> matrix (as in panel c); each label is a verbatim
+% adjacent sentence pair from phase_sentence, matrix sentence first.
+\begin{tikzpicture}[x=1cm,y=1cm]
+  \node[panelhead=sentcol!22] at (3.7,1.0) {Sentence-level CS \,---\, 6 ordered directions};
+  \coordinate (EN) at (0.5,0);
+  \coordinate (ZH) at (6.9,0);
+  \coordinate (NL) at (3.7,-1.7);
+  % top side: zh -> en (donor zh) above, en -> zh (donor en) below
+  \begin{scope}[transform canvas={shift={(0,0.16)}}]
+    \draw[csarrow, langZH] ($(ZH)!0.10!(EN)$) -- node[exlab]
+      {\textcolor{langEN}{It's you.} \textcolor{langZH}{\zh{不，不是。}}} ($(ZH)!0.90!(EN)$);
+  \end{scope}
+  \begin{scope}[transform canvas={shift={(0,-0.16)}}]
+    \draw[csarrow, langEN] ($(EN)!0.10!(ZH)$) -- node[exlab]
+      {\textcolor{langZH}{\zh{他是谁呀。}} \textcolor{langEN}{It's Xu Song.}} ($(EN)!0.90!(ZH)$);
+  \end{scope}
+  % left side: en -> nl (donor en) outer, nl -> en (donor nl) inner
+  \begin{scope}[transform canvas={shift={(-0.156,-0.111)}}]
+    \draw[csarrow, langEN] ($(EN)!0.12!(NL)$) -- node[exlab, sloped]
+      {\textcolor{langNL}{Ken je hem?} \textcolor{langEN}{He's my brother.}} ($(EN)!0.88!(NL)$);
+  \end{scope}
+  \begin{scope}[transform canvas={shift={(0.156,0.111)}}]
+    \draw[csarrow, langNL] ($(NL)!0.12!(EN)$) -- node[exlab, sloped]
+      {\textcolor{langEN}{Where's the dog?} \textcolor{langNL}{Hij slaapt.}} ($(NL)!0.88!(EN)$);
+  \end{scope}
+  % right side: zh -> nl (donor zh) outer, nl -> zh (donor nl) inner
+  \begin{scope}[transform canvas={shift={(0.156,-0.111)}}]
+    \draw[csarrow, langZH] ($(ZH)!0.12!(NL)$) -- node[exlab, sloped]
+      {\textcolor{langNL}{Zie je hem ?} \textcolor{langZH}{\zh{他在那里。}}} ($(ZH)!0.88!(NL)$);
+  \end{scope}
+  \begin{scope}[transform canvas={shift={(-0.156,0.111)}}]
+    \draw[csarrow, langNL] ($(NL)!0.12!(ZH)$) -- node[exlab, sloped]
+      {\textcolor{langZH}{\zh{他妈姓杨.}} \textcolor{langNL}{Ik heet Li.}} ($(NL)!0.88!(ZH)$);
+  \end{scope}
+  \node[langchip={langEN}{}] at (EN) {en};
+  \node[langchip={langZH}{}] at (ZH) {zh};
+  \node[langchip={langNL}{}] at (NL) {nl};
+\end{tikzpicture}
+
+\vspace{5pt}
+
+% ---------------- (c) word-level CS: directed triangle ----------------
+\begin{tikzpicture}[x=1cm,y=1cm]
+  \node[panelhead=intracol!42] at (3.7,1.0) {Word-level CS \,---\, 6 ordered directions};
+  \coordinate (EN) at (0.5,0);
+  \coordinate (ZH) at (6.9,0);
+  \coordinate (NL) at (3.7,-1.7);
+  % top side: zh -> en (donor zh) above, en -> zh (donor en) below
+  \begin{scope}[transform canvas={shift={(0,0.16)}}]
+    \draw[csarrow, langZH] ($(ZH)!0.10!(EN)$) -- node[exlab]
+      {I know it'll \textcolor{langZH}{\zh{行}}.} ($(ZH)!0.90!(EN)$);
+  \end{scope}
+  \begin{scope}[transform canvas={shift={(0,-0.16)}}]
+    \draw[csarrow, langEN] ($(EN)!0.10!(ZH)$) -- node[exlab]
+      {\zh{得}\,\textcolor{langEN}{believe}\,\zh{爱情。}} ($(EN)!0.90!(ZH)$);
+  \end{scope}
+  % left side: en -> nl (donor en) outer, nl -> en (donor nl) inner
+  \begin{scope}[transform canvas={shift={(-0.156,-0.111)}}]
+    \draw[csarrow, langEN] ($(EN)!0.12!(NL)$) -- node[exlab, sloped]
+      {Pak die \textcolor{langEN}{shovel} .} ($(EN)!0.88!(NL)$);
+  \end{scope}
+  \begin{scope}[transform canvas={shift={(0.156,0.111)}}]
+    \draw[csarrow, langNL] ($(NL)!0.12!(EN)$) -- node[exlab, sloped]
+      {That's \textcolor{langNL}{illegaal}!} ($(NL)!0.88!(EN)$);
+  \end{scope}
+  % right side: zh -> nl (donor zh) outer, nl -> zh (donor nl) inner
+  \begin{scope}[transform canvas={shift={(0.156,-0.111)}}]
+    \draw[csarrow, langZH] ($(ZH)!0.12!(NL)$) -- node[exlab, sloped]
+      {Geef me een \textcolor{langZH}{\zh{吻}} .} ($(ZH)!0.88!(NL)$);
+  \end{scope}
+  \begin{scope}[transform canvas={shift={(-0.156,0.111)}}]
+    \draw[csarrow, langNL] ($(NL)!0.12!(ZH)$) -- node[exlab, sloped]
+      {\zh{有什么}\,\textcolor{langNL}{verschil}?} ($(NL)!0.88!(ZH)$);
+  \end{scope}
+  \node[langchip={langEN}{}] at (EN) {en};
+  \node[langchip={langZH}{}] at (ZH) {zh};
+  \node[langchip={langNL}{}] at (NL) {nl};
+\end{tikzpicture}

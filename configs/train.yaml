@@ -1,6 +1,6 @@
 # Training recipe for every multilingual-macaroni condition and curriculum stage.
-# Matches the BabyLM baseline recipe used in the paper: LR 5e-5, cosine-with-min-lr,
-# warmup 0.01, batch 16, 10 epochs. Paths are RELATIVE to the repo root; train.py
+# The paper's recipe (= the BabyLM baseline): Adam without weight decay, LR 5e-5, 1%
+# warmup then cosine decay to 0, batch 16, 10 epochs. Paths are RELATIVE to the repo root; train.py
 # fills in per-condition fields (datasets, output_dir, model_name, checkpoint_dir,
 # init_new_model) and the tokenizer location.
 
@@ -25,7 +25,8 @@ output_dir: ""
 # or set --tokenizer explicitly on the command line.
 tokenizer_dir: ""
 
-# Minimal checkpoints (epoch 5 + final epoch 10). Curriculum runs add milestone saves.
+# Checkpoints at epochs 5 and 10 (plus the trainer's checkpoint-0 at init). Curriculum
+# stages use [1, 5, 10] (set by train.py): the points the trajectory figure reads.
 save_intervals: [5.0, 10.0]
 eval_strategy: "epoch"
 eval_intervals: 1.0

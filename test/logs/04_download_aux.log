@@ -1,0 +1,11 @@
+[babylm] BabyLM-community/babylm-eng@b78a9336 -> test/data/babylm/eng
+Fetching 2 files:   0%|          | 0/2 [00:00<?, ?it/s]Fetching 2 files:  50%|█████     | 1/2 [00:00<00:00,  1.33it/s]Fetching 2 files: 100%|██████████| 2/2 [00:00<00:00,  2.66it/s]
+[babylm] BabyLM-community/babylm-nld@1aa063f7 -> test/data/babylm/nld
+Fetching 2 files:   0%|          | 0/2 [00:00<?, ?it/s]Fetching 2 files:  50%|█████     | 1/2 [00:00<00:00,  1.26it/s]Fetching 2 files: 100%|██████████| 2/2 [00:01<00:00,  2.23it/s]Fetching 2 files: 100%|██████████| 2/2 [00:01<00:00,  2.00it/s]
+[babylm] BabyLM-community/babylm-zho@600a6657 -> test/data/babylm/zho
+Fetching 2 files:   0%|          | 0/2 [00:00<?, ?it/s]Fetching 2 files:  50%|█████     | 1/2 [00:01<00:01,  1.07s/it]Fetching 2 files: 100%|██████████| 2/2 [00:01<00:00,  1.87it/s]
+[muse] https://dl.fbaipublicfiles.com/arrival/dictionaries/en-nl.txt -> test/data/muse/en-nl.txt
+[muse] https://dl.fbaipublicfiles.com/arrival/dictionaries/nl-en.txt -> test/data/muse/nl-en.txt
+[muse] https://dl.fbaipublicfiles.com/arrival/dictionaries/en-zh.txt -> test/data/muse/en-zh.txt
+[muse] https://dl.fbaipublicfiles.com/arrival/dictionaries/zh-en.txt -> test/data/muse/zh-en.txt
+done.
